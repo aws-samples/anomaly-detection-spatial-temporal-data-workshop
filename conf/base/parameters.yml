@@ -1,3 +1,31 @@
-train_fraction: 0.8
-random_state: 3
-target_column: species
+user_behavior:
+  eland:
+    train_fraction: 0.8
+    random_state: 3
+    target_column: 
+  taddy:
+    train_fraction: 0.8
+    random_state: 3
+    target_column:      
+
+iot:
+  gdn:
+    train_fraction: 0.8
+    random_state: 0
+    target_column:      
+    
+telecom:
+  gdn:
+    train_fraction: 0.8
+    random_state: 0
+    target_column:   
+    
+financial:
+  eland:
+    train_fraction: 0.8
+    random_state: 3
+    target_column: 
+  taddy:
+    train_fraction: 0.8
+    random_state: 3
+    target_column:      

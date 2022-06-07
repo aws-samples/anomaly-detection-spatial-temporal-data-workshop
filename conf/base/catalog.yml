@@ -49,7 +49,7 @@ example_iris_data:
 user_behavior_data:
   reddit:
     type:
-    filepath:
+    filepath:           #where you hope audience download raw data to
     
 iot_data:
   BATADAL:
@@ -60,3 +60,6 @@ telecom:
   wifi:
     type:
     filepath:
+  itu_challenge: 
+    type:
+    filepath: 
