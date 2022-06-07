@@ -45,3 +45,18 @@
 example_iris_data:
   type: pandas.CSVDataSet
   filepath: data/01_raw/iris.csv
+
+user_behavior_data:
+  reddit:
+    type:
+    filepath:
+    
+iot_data:
+  BATADAL:
+    type:
+    filepath:
+    
+telecom:
+  wifi:
+    type:
+    filepath:
