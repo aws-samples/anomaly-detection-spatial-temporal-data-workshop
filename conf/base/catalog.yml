@@ -44,22 +44,24 @@
 
 example_iris_data:
   type: pandas.CSVDataSet
-  filepath: data/01_raw/iris.csv
+  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/01_raw/iris.csv
 
+financial_data:
+  type: pandas.CSVDataSet
+  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/01_raw/financial_fraud/bs140513_032310.csv
+    
 user_behavior_data:
-  reddit:
-    type:
-    filepath:           #where you hope audience download raw data to
+  type: pandas.CSVDataSet
+  filepath: None           
     
 iot_data:
-  BATADAL:
-    type:
-    filepath:
+  type: pandas.CSVDataSet
+  filepath: None
     
-telecom:
-  wifi:
-    type:
-    filepath:
-  itu_challenge: 
-    type:
-    filepath: 
+telecom_data_wifi:
+  type: pandas.CSVDataSet
+  filepath: None
+  
+telecom_data_itu_challenge: 
+  type: pandas.CSVDataSet
+  filepath: None

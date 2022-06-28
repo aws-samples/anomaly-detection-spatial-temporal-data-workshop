@@ -1,0 +1,22 @@
+# This is a boilerplate parameters config generated for pipeline 'taddy'
+# using Kedro 0.18.0.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://kedro.readthedocs.io/en/0.18.0/kedro_project_setup/configuration.html#parameters
+
+model_options:
+  test_size: 0.2
+  random_state: 3
+  lr: 0.001
+  weight_decay: 5e-4
+  max_epoch: 500
+  spy_tag: True
+  features:
+    - engines
+    - passenger_capacity
+    - crew
+    - d_check_complete
+    - moon_clearance_complete
+    - iata_approved
+    - company_rating
+    - review_scores_rating
