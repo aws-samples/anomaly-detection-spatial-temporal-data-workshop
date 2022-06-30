@@ -42,14 +42,30 @@
 # This is a data set used by the "Hello World" example pipeline provided with the project
 # template. Please feel free to remove it once you remove the example pipeline.
 
-example_iris_data:
-  type: pandas.CSVDataSet
-  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/01_raw/iris.csv
+# example_iris_data:
+#   type: pandas.CSVDataSet
+#   filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/01_raw/iris.csv
 
 financial_data:
   type: pandas.CSVDataSet
   filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/01_raw/financial_fraud/bs140513_032310.csv
-    
+
+processed_node_id:
+  type: pandas.CSVDataSet
+  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/02_intermediate/node_id.csv
+
+processed_edge_list:
+  type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
+  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/02_intermediate/edge_list.npz
+
+processed_edge_label:
+  type: pandas.CSVDataSet
+  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/02_intermediate/edge_label.csv
+
+preprocessed_graph_data:
+  type: pickle.PickleDataSet
+  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/03_primary/training_data.pkl
+
 user_behavior_data:
   type: pandas.CSVDataSet
   filepath: None           

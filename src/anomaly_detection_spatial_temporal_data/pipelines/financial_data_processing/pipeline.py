@@ -4,7 +4,7 @@ generated using Kedro 0.18.0
 """
 
 from kedro.pipeline import Pipeline, node, pipeline
-from .nodes import preprocess_transaction_history, construct_graph
+from .nodes import preprocess_transaction_history, split_data
 
 def create_pipeline(**kwargs) -> Pipeline:
     return pipeline(
@@ -12,14 +12,14 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=preprocess_transaction_history,
                 inputs="financial_data",
-                outputs="preprocessed_companies",
+                outputs=["processed_node_id", "processed_edge_list", "processed_edge_label"],
                 name="preprocess_transaction_data_node",
             ),
             node(
-                func=construct_graph,
-                inputs="shuttles",
-                outputs="preprocessed_shuttles",
-                name="preprocess_shuttles_node",
+                func=split_data,
+                inputs=["processed_edge_list","processed_node_id","params:data_process_options"],
+                outputs="preprocessed_graph_data",
+                name="data_split",
             ),
         ]
     )
