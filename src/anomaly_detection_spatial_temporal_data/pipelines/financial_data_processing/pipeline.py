@@ -19,7 +19,7 @@ def create_pipeline(**kwargs) -> Pipeline:
                 func=split_data,
                 inputs=["processed_edge_list","processed_node_id","params:data_process_options"],
                 outputs="preprocessed_graph_data",
-                name="data_split",
+                name="data_split_node",
             ),
         ]
     )

@@ -1,30 +1,111 @@
-import torch
-import torch.nn.functional as F
-import torch.optim as optim
-from transformers.modeling_bert import BertPreTrainedModel, BertPooler
-
-from codes.Component import EdgeEncoding, TransformerEncoder
-from codes.BaseModel import BaseModel
-
 import time
 import numpy as np
-
 from sklearn import metrics
 
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+import networkx as nx
+from transformers.modeling_bert import BertAttention, BertIntermediate, BertOutput, BertPreTrainedModel, BertPooler
+from transformers.configuration_utils import PretrainedConfig
+
+class TransformerEncoder(nn.Module):
+    """Encoder for Taddy Transformer"""
+    def __init__(self, config):
+        super(TransformerEncoder, self).__init__()
+        self.output_attentions = config.output_attentions
+        self.output_hidden_states = config.output_hidden_states
+        self.layer = nn.ModuleList([TransformerLayer(config) for _ in range(config.num_hidden_layers)])
+
+    def forward(self, hidden_states, attention_mask=None, head_mask=None, encoder_hidden_states=None, encoder_attention_mask=None):
+        all_hidden_states = ()
+        all_attentions = ()
+        for i, layer_module in enumerate(self.layer):
+            if self.output_hidden_states:
+                all_hidden_states = all_hidden_states + (hidden_states,)
+
+            layer_outputs = layer_module(hidden_states, attention_mask, head_mask[i], encoder_hidden_states, encoder_attention_mask)
+            hidden_states = layer_outputs[0]
+
+            if self.output_attentions:
+                all_attentions = all_attentions + (layer_outputs[1],)
+
+        # Add last layer
+        if self.output_hidden_states:
+            all_hidden_states = all_hidden_states + (hidden_states,)
+
+        outputs = (hidden_states,)
+        if self.output_hidden_states:
+            outputs = outputs + (all_hidden_states,)
+        if self.output_attentions:
+            outputs = outputs + (all_attentions,)
+        return outputs
+
+class EdgeEncoding(nn.Module):
+    """edge encoding for Taddy"""
+    def __init__(self, config):
+        super(EdgeEncoding, self).__init__()
+        self.config = config
+
+        self.inti_pos_embeddings = nn.Embedding(config.max_inti_pos_index, config.hidden_size)
+        self.hop_dis_embeddings = nn.Embedding(config.max_hop_dis_index, config.hidden_size)
+        self.time_dis_embeddings = nn.Embedding(config.max_hop_dis_index, config.hidden_size)
+
+        self.LayerNorm = nn.LayerNorm(config.hidden_size, eps=float(config.layer_norm_eps))
+        self.dropout = nn.Dropout(config.hidden_dropout_prob)
+
+    def forward(self, init_pos_ids=None, hop_dis_ids=None, time_dis_ids=None):
+
+        position_embeddings = self.inti_pos_embeddings(init_pos_ids)
+        hop_embeddings = self.hop_dis_embeddings(hop_dis_ids)
+        time_embeddings = self.hop_dis_embeddings(time_dis_ids)
+
+        embeddings = position_embeddings + hop_embeddings + time_embeddings
+        embeddings = self.LayerNorm(embeddings)
+        embeddings = self.dropout(embeddings)
+        return embeddings
 
 
-class DynamicGraph():
-    def __init__(self):
-        pass
+class TransformerLayer(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.attention = BertAttention(config)
+        self.is_decoder = config.is_decoder
+        if self.is_decoder:
+            self.crossattention = BertAttention(config)
+        self.intermediate = BertIntermediate(config)
+        self.output = BertOutput(config)
 
+    def forward(
+        self,
+        hidden_states,
+        attention_mask=None,
+        head_mask=None,
+        encoder_hidden_states=None,
+        encoder_attention_mask=None,
+    ):
+        self_attention_outputs = self.attention(hidden_states, attention_mask, head_mask)
+        attention_output = self_attention_outputs[0]
+        outputs = self_attention_outputs[1:]
 
-BertLayerNorm = torch.nn.LayerNorm
+        if self.is_decoder and encoder_hidden_states is not None:
+            cross_attention_outputs = self.crossattention(
+                attention_output, attention_mask, head_mask, encoder_hidden_states, encoder_attention_mask
+            )
+            attention_output = cross_attention_outputs[0]
+            outputs = outputs + cross_attention_outputs[1:]
 
-class BaseModel(BertPreTrainedModel):
+        intermediate_output = self.intermediate(attention_output)
+        layer_output = self.output(intermediate_output, attention_output)
+        outputs = (layer_output,) + outputs
+        return outputs
+
+class BaseTransformer(BertPreTrainedModel):
     data = None
 
     def __init__(self, config):
-        super(BaseModel, self).__init__(config)
+        super(BaseTransformer, self).__init__(config)
         self.config = config
 
         self.embeddings = EdgeEncoding(config)
@@ -137,25 +218,25 @@ class BaseModel(BertPreTrainedModel):
 class Taddy(BertPreTrainedModel):
     """TADDY model is based on transformer"""
     learning_record_dict = {}
-    lr = 0.001
-    weight_decay = 5e-4
-    max_epoch = 500
-    spy_tag = True
+#     lr = 0.001
+#     weight_decay = 5e-4
+#     max_epoch = 500
+#     spy_tag = True
 
     load_pretrained_path = ''
     save_pretrained_path = ''
 
-    def __init__(self, config, args):
-        super(DynADModel, self).__init__(config, args)
-        self.args = args
+    def __init__(self, data, config):
+        super(Taddy, self).__init__(config)
+        #self.args = args
         self.config = config
-        self.transformer = BaseModel(config)
+        self.data = data
+        self.transformer = BaseTransformer(config)
         self.cls_y = torch.nn.Linear(config.hidden_size, 1)
-        self.weight_decay = config.weight_decay
         self.init_weights()
 
     # WL dict
-    def WL_setting_init(node_list, link_list):
+    def WL_setting_init(self, node_list, link_list):
         node_color_dict = {}
         node_neighbor_dict = {}
 
@@ -174,14 +255,14 @@ class Taddy(BertPreTrainedModel):
 
         return node_color_dict, node_neighbor_dict
 
-    def compute_zero_WL(node_list, link_list):
+    def compute_zero_WL(self, node_list, link_list):
         WL_dict = {}
         for i in node_list:
             WL_dict[i] = 0
         return WL_dict
 
     # batching + hop + int + time
-    def compute_batch_hop(node_list, edges_all, num_snap, Ss, k=5, window_size=1):
+    def compute_batch_hop(self, node_list, edges_all, num_snap, Ss, k=5, window_size=1):
 
         batch_hop_dicts = [None] * (window_size-1)
         s_ranking = [0] + list(range(k+1))
@@ -230,7 +311,7 @@ class Taddy(BertPreTrainedModel):
         return batch_hop_dicts
 
     # Dict to embeddings
-    def dicts_to_embeddings(feats, batch_hop_dicts, wl_dict, num_snap, use_raw_feat=False):
+    def dicts_to_embeddings(self, feats, batch_hop_dicts, wl_dict, num_snap, use_raw_feat=False):
 
         raw_embeddings = []
         wl_embeddings = []
@@ -336,10 +417,10 @@ class Taddy(BertPreTrainedModel):
     def generate_embedding(self, edges):
         num_snap = len(edges)
         # WL_dict = compute_WL(self.data['idx'], np.vstack(edges[:7]))
-        WL_dict = compute_zero_WL(self.data['idx'],  np.vstack(edges[:7]))
-        batch_hop_dicts = compute_batch_hop(self.data['idx'], edges, num_snap, self.data['S'], self.config.k, self.config.window_size)
+        WL_dict = self.compute_zero_WL(self.data['idx'],  np.vstack(edges[:7]))
+        batch_hop_dicts = self.compute_batch_hop(self.data['idx'], edges, num_snap, self.data['S'], self.config.k, self.config.window_size)
         raw_embeddings, wl_embeddings, hop_embeddings, int_embeddings, time_embeddings = \
-            dicts_to_embeddings(self.data['X'], batch_hop_dicts, WL_dict, num_snap)
+            self.dicts_to_embeddings(self.data['X'], batch_hop_dicts, WL_dict, num_snap)
         return raw_embeddings, wl_embeddings, hop_embeddings, int_embeddings, time_embeddings
 
     def negative_sampling(self, edges):
@@ -360,7 +441,7 @@ class Taddy(BertPreTrainedModel):
 
     def train_model(self, max_epoch):
 
-        optimizer = optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
+        optimizer = optim.Adam(self.parameters(), lr=self.config.lr, weight_decay=float(self.config.weight_decay))
         raw_embeddings, wl_embeddings, hop_embeddings, int_embeddings, time_embeddings = self.generate_embedding(self.data['edges'])
         self.data['raw_embeddings'] = None
 
@@ -407,7 +488,7 @@ class Taddy(BertPreTrainedModel):
             loss_train /= len(self.data['snap_train']) - self.config.window_size + 1
             print('Epoch: {}, loss:{:.4f}, Time: {:.4f}s'.format(epoch + 1, loss_train, time.time() - t_epoch_begin))
 
-            if ((epoch + 1) % self.args.print_feq) == 0:
+            if ((epoch + 1) % self.config.print_feq) == 0:
                 self.eval()
                 preds = []
                 for snap in self.data['snap_test']:
@@ -429,11 +510,14 @@ class Taddy(BertPreTrainedModel):
                 for i in range(len(self.data['snap_test'])):
                     print("Snap: %02d | AUC: %.4f" % (self.data['snap_test'][i], aucs[i]))
                 print('TOTAL AUC:{:.4f}'.format(auc_full))
+    
+    def predict(self):
+        pass
 
     def run(self):
-        self.train_model(self.max_epoch)
+        self.train_model(self.config.max_epoch)
         return self.learning_record_dict
     
-class Eland(DynamicGraph):
+class Eland():
     def __init__(self):
         pass    

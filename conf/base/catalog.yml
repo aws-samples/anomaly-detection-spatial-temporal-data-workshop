@@ -66,6 +66,14 @@ preprocessed_graph_data:
   type: pickle.PickleDataSet
   filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/03_primary/training_data.pkl
 
+data_dict:
+  type: pickle.PickleDataSet
+  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/05_model_input/data_dict.pkl
+  
+train_result:
+  type: pickle.PickleDataSet
+  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/07_model_output/train_result.pkl
+
 user_behavior_data:
   type: pandas.CSVDataSet
   filepath: None           

@@ -4,19 +4,36 @@
 # Documentation for this file format can be found in "Parameters"
 # Link: https://kedro.readthedocs.io/en/0.18.0/kedro_project_setup/configuration.html#parameters
 
-model_options:
+data_load_options:
+  c: 0.15
+  eps: 0.001
   test_size: 0.2
   random_state: 3
+  batch_size: 256
+  load_all_tag: False
+  neighbor_num: 5
+  window_size: 2
+  compute_s: True
+
+model_options:
+  neighbor_num: 5
+  window_size: 2
+  batch_size: 256
+  embedding_dim: 32
+  num_hidden_layers: 2
+  num_attention_heads: 2
+  seed: 1
+  print_feq: 10
   lr: 0.001
   weight_decay: 5e-4
-  max_epoch: 500
+  max_epoch: 100
   spy_tag: True
-  features:
-    - engines
-    - passenger_capacity
-    - crew
-    - d_check_complete
-    - moon_clearance_complete
-    - iata_approved
-    - company_rating
-    - review_scores_rating
+  max_hop_dis_index: 100
+  max_inti_pos_index: 100
+  hidden_act: "gelu"
+  hidden_dropout_prob: 0.5
+  attention_probs_dropout_prob: 0.3
+  initializer_range: 0.02
+  layer_norm_eps: 0.000000000001
+  is_decoder: False
+  
