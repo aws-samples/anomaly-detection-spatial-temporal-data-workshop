@@ -1,4 +1,5 @@
 import time
+import os
 import numpy as np
 from sklearn import metrics
 
@@ -218,13 +219,9 @@ class BaseTransformer(BertPreTrainedModel):
 class Taddy(BertPreTrainedModel):
     """TADDY model is based on transformer"""
     learning_record_dict = {}
-#     lr = 0.001
-#     weight_decay = 5e-4
-#     max_epoch = 500
-#     spy_tag = True
-
     load_pretrained_path = ''
     save_pretrained_path = ''
+    save_model_path = ''
 
     def __init__(self, data, config):
         super(Taddy, self).__init__(config)
@@ -446,7 +443,7 @@ class Taddy(BertPreTrainedModel):
         self.data['raw_embeddings'] = None
 
         ns_function = self.negative_sampling
-
+        auc_full_prev = 0
         for epoch in range(max_epoch):
             t_epoch_begin = time.time()
 
@@ -457,6 +454,7 @@ class Taddy(BertPreTrainedModel):
             self.train()
 
             loss_train = 0
+            
             for snap in self.data['snap_train']:
 
                 if wl_embeddings[snap] is None:
@@ -487,7 +485,7 @@ class Taddy(BertPreTrainedModel):
 
             loss_train /= len(self.data['snap_train']) - self.config.window_size + 1
             print('Epoch: {}, loss:{:.4f}, Time: {:.4f}s'.format(epoch + 1, loss_train, time.time() - t_epoch_begin))
-
+            self.learning_record_dict.setdefault(epoch + 1, {'train_loss':loss_train})
             if ((epoch + 1) % self.config.print_feq) == 0:
                 self.eval()
                 preds = []
@@ -510,13 +508,34 @@ class Taddy(BertPreTrainedModel):
                 for i in range(len(self.data['snap_test'])):
                     print("Snap: %02d | AUC: %.4f" % (self.data['snap_test'][i], aucs[i]))
                 print('TOTAL AUC:{:.4f}'.format(auc_full))
+                self.learning_record_dict[epoch + 1].setdefault('test_auc',auc_full)
+                
+                if auc_full>auc_full_prev:
+                    self.save_model_path = os.path.join(self.config.save_directory,f'taddy_model_{epoch}.pth')
+                    torch.save(self,self.save_model_path)
     
-    def predict(self):
-        pass
+    def load_model(self, model_path):
+        return torch.load(model_path)
+    
+    def predict(self, snap_num):
+        print('Generating embeddings...')
+        raw_embeddings, wl_embeddings, hop_embeddings, int_embeddings, time_embeddings = self.generate_embedding(self.data['edges'])
+        print('Embeddings created!')
+        self.eval()
+        
+        #snap = max(self.data['snap_train']) + snap_num
+        int_embedding = int_embeddings[snap_num]
+        hop_embedding = hop_embeddings[snap_num]
+        time_embedding = time_embeddings[snap_num]
+        with torch.no_grad():
+            output = self.forward(int_embedding, hop_embedding, time_embedding, None)
+            output = torch.sigmoid(output)
+        pred = output.squeeze().numpy()      
+        return pred
 
     def run(self):
         self.train_model(self.config.max_epoch)
-        return self.learning_record_dict
+        return self.learning_record_dict, self.save_model_path
     
 class Eland():
     def __init__(self):

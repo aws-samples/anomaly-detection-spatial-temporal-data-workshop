@@ -45,3 +45,4 @@ class TaddyConfig(PretrainedConfig):
         self.spy_tag = config['spy_tag']
         self.print_feq = config['print_feq']
         self.seed = config['seed']
+        self.save_directory = config['save_directory']

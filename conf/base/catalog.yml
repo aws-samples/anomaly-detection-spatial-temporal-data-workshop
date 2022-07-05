@@ -42,10 +42,8 @@
 # This is a data set used by the "Hello World" example pipeline provided with the project
 # template. Please feel free to remove it once you remove the example pipeline.
 
-# example_iris_data:
-#   type: pandas.CSVDataSet
-#   filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/01_raw/iris.csv
-
+###########################################################################################################################
+# File path for financial fraud dataset 
 financial_data:
   type: pandas.CSVDataSet
   filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/01_raw/financial_fraud/bs140513_032310.csv
@@ -66,6 +64,10 @@ preprocessed_graph_data:
   type: pickle.PickleDataSet
   filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/03_primary/training_data.pkl
 
+preprocessed_adj_matrix_eigen_data:
+  type: pickle.PickleDataSet
+  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/05_model_input/eigen.pkl
+
 data_dict:
   type: pickle.PickleDataSet
   filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/05_model_input/data_dict.pkl
@@ -74,18 +76,42 @@ train_result:
   type: pickle.PickleDataSet
   filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/07_model_output/train_result.pkl
 
+model_path:
+  type: text.TextDataSet
+  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/07_model_output/model_path.txt
+  
+inference_result:
+  type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
+  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/07_model_output/inference_result.npz
+
+
+###########################################################################################################################
+
+
+###########################################################################################################################
+# File path for user behavior dataset 
 user_behavior_data:
   type: pandas.CSVDataSet
   filepath: None           
-    
+###########################################################################################################################
+
+###########################################################################################################################
+# File path for iot dataset 
 iot_data:
   type: pandas.CSVDataSet
   filepath: None
-    
+###########################################################################################################################
+
+###########################################################################################################################
+# File path for wifi dataset 
 telecom_data_wifi:
   type: pandas.CSVDataSet
   filepath: None
-  
+###########################################################################################################################
+
+###########################################################################################################################
+# File path for ITU dataset 
 telecom_data_itu_challenge: 
   type: pandas.CSVDataSet
   filepath: None
+###########################################################################################################################

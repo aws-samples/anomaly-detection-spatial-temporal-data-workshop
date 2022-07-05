@@ -15,13 +15,6 @@ class StaticDatasetLoader():
     
     
 class DynamicDatasetLoader():
-#     c = 0.15
-#     eps = 0.001
-#     data = None
-#     batch_size = None
-#     load_all_tag = False
-#     compute_s = False
-#     train_per = 0.5
 
     def __init__(self, processed_data, config):
         self.data = processed_data
@@ -32,6 +25,7 @@ class DynamicDatasetLoader():
         self.compute_s = config['compute_s']
         self.neighbor_num = config['neighbor_num']
         self.window_size = config['window_size']
+        self.eigen_file_name = config['eigen_file_name']
         #self.train_per = args.train_per
 
     def load_hop_wl_batch(self):  #load the "raw" WL/Hop/Batch dict
@@ -130,9 +124,8 @@ class DynamicDatasetLoader():
         return adj_normalized
 
     def get_adjs(self, rows, cols, weights, nb_nodes):
-
-        #eigen_file_name = '../../../data/05_model_input/eigen.pkl'
-        eigen_file_name = '/home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/05_model_input/eigen.pkl'
+        """Generate adjacency matrix and conduct eigenvalue decomposition for node sampling"""
+        eigen_file_name = self.eigen_file_name
         if not os.path.exists(eigen_file_name):
             generate_eigen = True
             print('Generating eigen as: ' + eigen_file_name)
@@ -174,9 +167,6 @@ class DynamicDatasetLoader():
     def load(self):
         """Load dynamic network dataset"""
 
-#        print('Loading {} dataset...'.format(self.dataset_name))
-#         with open('data/percent/' + self.dataset_name + '_' + str(self.train_per) + '_' + str(self.anomaly_per) + '.pkl', 'rb') as f:
-#             rows, cols, labels, weights, headtail, train_size, test_size, nb_nodes, nb_edges = pickle.load(f)
         rows, cols, labels, weights, headtail, train_size, test_size, nb_nodes, nb_edges = self.data
     
         degrees = np.array([len(x) for x in headtail])
