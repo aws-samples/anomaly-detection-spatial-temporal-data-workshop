@@ -42,24 +42,39 @@
 # This is a data set used by the "Hello World" example pipeline provided with the project
 # template. Please feel free to remove it once you remove the example pipeline.
 
-example_iris_data:
+###########################################################################################################################
+# File path for iot dataset 
+iot_data_train_clean:
   type: pandas.CSVDataSet
-  filepath: data/01_raw/iris.csv
+  filepath: data/01_raw/BATADAL_dataset03_train_no_anomaly.csv
+  
+iot_data_train_anom:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/BATADAL_dataset04_train_some_anomaly.csv
+  
+iot_data_test:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/BATADAL_test_dataset_some_anomaly.csv
+  
+iot_gdn_sensor_cols_txt:
+  type: text.TextDataSet
+  filepath: data/03_primary/iot_gdn_sensor_list_batadal.txt
+  
+iot_data_gdn_train:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot_gdn_train.csv
+  save_args:
+    index: False
 
-user_behavior_data:
-  reddit:
-    type:
-    filepath:           #where you hope audience download raw data to
-    
-iot_data:
-  BATADAL:
-    type:
-    filepath:
-    
-telecom:
-  wifi:
-    type:
-    filepath:
-  itu_challenge: 
-    type:
-    filepath: 
+iot_data_gdn_train_anom:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot_gdn_train_anom.csv
+  save_args:
+    index: False
+  
+iot_data_gdn_test:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot_gdn_test.csv
+  save_args:
+    index: False
+###########################################################################################################################

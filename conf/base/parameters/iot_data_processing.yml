@@ -1,0 +1,12 @@
+# This is a boilerplate parameters config generated for pipeline 'iot_data_processing'
+# using Kedro 0.18.1.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://kedro.readthedocs.io/en/0.18.1/kedro_project_setup/configuration.html#parameters
+
+is_gdn: True
+label_col: 'attack'
+
+train_clean_key: 'train_set1_anomalies'
+train_anom_key: 'train_set2_anomalies'
+test_anom_key: 'test_set_anomalies'
