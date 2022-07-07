@@ -1,4 +1,4 @@
-kedro
+kedro==0.18.1
 numpy
 scikit-learn
 torch==1.5.1
