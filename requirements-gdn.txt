@@ -1,0 +1,4 @@
+kedro
+numpy
+scikit-learn
+torch==1.5.1
