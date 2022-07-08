@@ -82,19 +82,18 @@ def normalize(
 
 def save_sensor_cols(sensor_columns: List[str]) -> None:
     return "\n".join(sensor_columns)
-#     with open(output_fn, "w") as f:
-#         f.writelines("\n".join(sensor_columns))
-        
 
-# can have GDN/NAB as input
 def save_csv(
     df: pd.DataFrame, 
     sensor_columns: List[str], 
-    label_column_name: str
+    label_column_name: str,
 ) -> None:
     
-    return df[["timestamp"] + sensor_columns + [label_column_name]]  #  .to_csv(output_fn, index=False)
-
-        
-def save_labels_nab():
-    pass
+    # GDN
+    if label_column_name == "attack": 
+        return df[["timestamp"] + sensor_columns + [label_column_name]]
+    # NCAD
+    elif label_column_name == "label":
+        return df[sensor_columns + [label_column_name]]  
+    else:
+        raise NotImplementedError

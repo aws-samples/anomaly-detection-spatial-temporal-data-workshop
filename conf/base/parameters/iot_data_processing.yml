@@ -4,8 +4,8 @@
 # Documentation for this file format can be found in "Parameters"
 # Link: https://kedro.readthedocs.io/en/0.18.1/kedro_project_setup/configuration.html#parameters
 
-is_gdn: True
-label_col: 'attack'
+label_column_name_gdn: 'attack'
+label_column_name_ncad: 'label'
 
 train_clean_key: 'train_set1_anomalies'
 train_anom_key: 'train_set2_anomalies'

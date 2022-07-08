@@ -56,9 +56,9 @@ iot_data_test:
   type: pandas.CSVDataSet
   filepath: data/01_raw/BATADAL_test_dataset_some_anomaly.csv
   
-iot_gdn_sensor_cols_txt:
+iot_sensor_cols_txt:
   type: text.TextDataSet
-  filepath: data/03_primary/iot_gdn_sensor_list_batadal.txt
+  filepath: data/03_primary/iot_sensor_list_batadal.txt
   
 iot_data_gdn_train:
   type: pandas.CSVDataSet
@@ -77,4 +77,23 @@ iot_data_gdn_test:
   filepath: data/03_primary/iot_gdn_test.csv
   save_args:
     index: False
+    
+iot_data_ncad_train:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot_ncad_train.csv
+  save_args:
+    index: False
+    
+iot_data_ncad_train_anom:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot_ncad_train_anom.csv
+  save_args:
+    index: False
+    
+iot_data_ncad_test:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot_ncad_test.csv
+  save_args:
+    index: False
+    
 ###########################################################################################################################

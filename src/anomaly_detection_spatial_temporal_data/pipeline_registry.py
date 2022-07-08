@@ -1,12 +1,23 @@
 """Project pipelines."""
+import os
 from typing import Dict
 
 from kedro.pipeline import Pipeline
 
-# from anomaly_detection_spatial_temporal_data.pipeline import create_pipeline
+VENV_INFO = os.environ["VIRTUAL_ENV"]
 
-from anomaly_detection_spatial_temporal_data.pipelines import iot_data_processing as idp
-from anomaly_detection_spatial_temporal_data.pipelines import gdn
+if "gdn" in VENV_INFO:
+    from anomaly_detection_spatial_temporal_data.pipelines import iot_data_processing as idp
+    from anomaly_detection_spatial_temporal_data.pipelines import gdn
+    
+    data_processing_pipeline = idp.create_pipeline()
+    model_pipeline = gdn.create_pipeline()
+
+if "ncad" in VENV_INFO:
+    from anomaly_detection_spatial_temporal_data.pipelines import iot_data_processing as idp
+    
+    data_processing_pipeline = idp.create_pipeline()
+    model_pipeline = None
 
 def register_pipelines() -> Dict[str, Pipeline]:
     """Register the project's pipelines.
@@ -15,12 +26,9 @@ def register_pipelines() -> Dict[str, Pipeline]:
         A mapping from a pipeline name to a ``Pipeline`` object.
     """
 
-    iot_data_processing_pipeline = idp.create_pipeline()
-    gdn_pipeline = gdn.create_pipeline()
-    
     return {
-        "__default__": iot_data_processing_pipeline,
-        "iot_data_processing": iot_data_processing_pipeline,
-        "gdn": gdn_pipeline,
-        "iot_gdn": iot_data_processing_pipeline + gdn_pipeline
+        "__default__": data_processing_pipeline,
+        "data_processing": data_processing_pipeline,
+        "model_pipeline": model_pipeline,
+        "complete": data_processing_pipeline + model_pipeline
     }

@@ -12,7 +12,7 @@ def create_pipeline(**kwargs) -> Pipeline:
         [
             node(
                 func=set_and_train_model,
-                inputs=["iot_gdn_sensor_cols_txt", "iot_data_gdn_train", "iot_data_gdn_test", "params:train_config", "params:env_config"],
+                inputs=["iot_sensor_cols_txt", "iot_data_gdn_train", "iot_data_gdn_test", "params:train_config", "params:env_config"],
                 outputs=None,
                 name="train_gdn"
             )
