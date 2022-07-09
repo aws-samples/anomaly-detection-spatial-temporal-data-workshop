@@ -1,3 +1,4 @@
+"""Reference: https://github.com/yuetan031/TADDY_pytorch"""
 import sys 
 sys.path.append('../../src/anomaly_detection_spatial_temporal_data/')
 
@@ -7,7 +8,7 @@ import scipy.sparse as sp
 from numpy.linalg import inv
 import pickle
 import os
-#from utils import ensure_directory
+
 
 class StaticDatasetLoader():
     def __init__(self, dataset_name, args):
