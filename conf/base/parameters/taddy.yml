@@ -26,7 +26,7 @@ model_options:
   print_feq: 10
   lr: 0.001
   weight_decay: 5e-4
-  max_epoch: 100
+  max_epoch: 10
   spy_tag: True
   max_hop_dis_index: 100
   max_inti_pos_index: 100
