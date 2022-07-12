@@ -15,9 +15,10 @@ if "gdn" in VENV_INFO:
 
 if "ncad" in VENV_INFO:
     from anomaly_detection_spatial_temporal_data.pipelines import iot_data_processing as idp
+    from anomaly_detection_spatial_temporal_data.pipelines import ncad
     
     data_processing_pipeline = idp.create_pipeline()
-    model_pipeline = None
+    model_pipeline = ncad.create_pipeline()
 
 def register_pipelines() -> Dict[str, Pipeline]:
     """Register the project's pipelines.

@@ -96,4 +96,7 @@ iot_data_ncad_test:
   save_args:
     index: False
     
+# iot_ncad_trainer_pickle:
+#   type: pickle.PickleDataSet
+#   filepath: data/06_models/trainer.pkl
 ###########################################################################################################################
