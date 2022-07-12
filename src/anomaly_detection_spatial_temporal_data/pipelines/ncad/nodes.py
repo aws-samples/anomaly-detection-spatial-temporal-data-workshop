@@ -286,9 +286,10 @@ def set_up_callbacks(
     
 def load_and_evaluate(
     model_dir,
-    exp_name: str
-#     trainer: Trainer,
-#     evaluation_result_path: Optional[Union[str, PosixPath]] = None,
+    exp_name: str,
+    data_set: TimeSeriesDataset,
+    stride: int,
+    classifier_threshold: float
 ):
     model_dir = PosixPath(model_dir).expanduser() if str(model_dir).startswith("~") else Path(model_dir)
     
@@ -298,8 +299,16 @@ def load_and_evaluate(
         file
         for file in os.listdir(model_dir)
         if (file.endswith(".ckpt") and file.startswith("ncad-model-" + exp_name))
-    ][-1]
+#         if (file.endswith(".ckpt")) # debug only
+    ]
+    print(model_dir, len(ckpt_file), ckpt_file)
+    ckpt_file = ckpt_file[-1]
     ckpt_path = model_dir / ckpt_file
     model = NCAD.load_from_checkpoint(ckpt_path)
 
+    anomaly_probs_avg, anomaly_vote = model.tsdetect(data_set, stride, classifier_threshold)
+    
+    print(anomaly_probs_avg.shape, anomaly_vote.shape)
     print(f"NCAD on batadal dataset finished successfully!")    
+    
+    return anomaly_probs_avg, anomaly_vote

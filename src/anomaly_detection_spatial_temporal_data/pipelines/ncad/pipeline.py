@@ -98,8 +98,8 @@ def create_pipeline(**kwargs) -> Pipeline:
             # evaluation node
             node(
                 func=load_and_evaluate,
-                inputs=["model_dir_linked", "exp_name"],
-                outputs=None,
+                inputs=["model_dir_linked", "exp_name", "test_std", "params:stride_roll_pred_val_test", "params:classifier_threshold"], 
+                outputs=["iot_test_inference_scores", "iot_test_inference_votes"],
                 name="evaluation_node"
             )
         ]

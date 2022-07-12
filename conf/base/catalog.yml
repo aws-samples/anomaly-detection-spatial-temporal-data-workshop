@@ -96,6 +96,14 @@ iot_data_ncad_test:
   save_args:
     index: False
     
+iot_test_inference_scores:
+  type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
+  filepath: data/07_model_output/ncad/inference_scores.npz
+  
+iot_test_inference_votes:
+  type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
+  filepath: data/07_model_output/ncad/inference_votes.npz
+  
 # iot_ncad_trainer_pickle:
 #   type: pickle.PickleDataSet
 #   filepath: data/06_models/trainer.pkl
