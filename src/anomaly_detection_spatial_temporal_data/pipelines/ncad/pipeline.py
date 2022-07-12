@@ -92,13 +92,13 @@ def create_pipeline(**kwargs) -> Pipeline:
                     "params:max_windows_unfold_batch",
                     "params:evaluation_result_path"
                 ],
-                outputs="model_dir_linked",
+                outputs=["model_dir_linked", "classifier_threshold"],
                 name="set_and_train_node"
             ),
             # evaluation node
             node(
                 func=load_and_evaluate,
-                inputs=["model_dir_linked", "exp_name", "test_std", "params:stride_roll_pred_val_test", "params:classifier_threshold"], 
+                inputs=["model_dir_linked", "exp_name", "test_std", "params:stride_roll_pred_val_test", "classifier_threshold"], 
                 outputs=["iot_test_inference_scores", "iot_test_inference_votes"],
                 name="evaluation_node"
             )

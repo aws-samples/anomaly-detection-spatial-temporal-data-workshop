@@ -183,7 +183,7 @@ def set_and_train_model(
     max_windows_unfold_batch: Optional[int] = 5000,
     
     evaluation_result_path: Optional[Union[str, PosixPath]] = None,
-):
+) -> Tuple:
     if distance == "cosine":
         # For the contrastive approach, the cosine distance is used
         distance = ncad.model.distances.CosineDistance()
@@ -246,7 +246,8 @@ def set_and_train_model(
     # Metrics on validation and test data #
     evaluation_result = trainer.test()
     evaluation_result = evaluation_result[0]
-
+    classifier_threshold = evaluation_result["classifier_threshold"]
+    
     # Save evaluation results
     if evaluation_result_path is not None:
         path = evaluation_result_path
@@ -258,7 +259,7 @@ def set_and_train_model(
         # if key.startswith('test_'):
         print(f"{key}={value}")
         
-    return model_dir
+    return model_dir, classifier_threshold
     
 def set_up_callbacks(
     ## General
