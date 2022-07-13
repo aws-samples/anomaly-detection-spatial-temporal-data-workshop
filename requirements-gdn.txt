@@ -1,3 +1,4 @@
+ipykernel==6.15.1
 kedro==0.18.1
 numpy
 scikit-learn

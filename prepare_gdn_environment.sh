@@ -13,3 +13,5 @@ pip install --no-index torch-sparse -f https://pytorch-geometric.com/whl/torch-1
 pip install --no-index torch-cluster -f https://pytorch-geometric.com/whl/torch-1.5.0+cu102.html
 pip install --no-index torch-spline-conv -f https://pytorch-geometric.com/whl/torch-1.5.0+cu102.html
 pip install torch-geometric==1.5.0
+
+python -m ipykernel install --user --name ${env_name} --display-name "${env_name}"

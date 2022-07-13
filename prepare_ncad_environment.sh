@@ -15,3 +15,5 @@ pip uninstall -y pytorch-lightning
 
 pip install torchmetrics==0.6.0
 pip install pytorch-lightning==1.3.8
+
+python -m ipykernel install --user --name ${env_name} --display-name "${env_name}"
