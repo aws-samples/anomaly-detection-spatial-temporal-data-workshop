@@ -1,11 +1,12 @@
 import time
+import os
 import pandas as pd
 from typing import Dict, Tuple
 import numpy as np
 from tqdm import tqdm
 from scipy.sparse import csr_matrix,coo_matrix,eye
 #from dataset import dataset 
-#from utils import ensure_directory
+from anomaly_detection_spatial_temporal_data.utils import ensure_directory
 #SAVE_PATH = '../../../../data/02_intermediate/financial_fraud'
 
 class CSVtoTS():
@@ -13,7 +14,25 @@ class CSVtoTS():
     
     def __init__(self, df):
         self.df = df
-    
+        
+    def split_data_into_separate_ts(self, ts_count_threshold, time_col, value_col, label_col, data_dir, label_dir):
+        customer_category_trans_count = self.df.groupby(by=['customer','category']).agg({time_col:'count'})
+        customer_category_trans_more_than_threshold =customer_category_trans_count.loc[customer_category_trans_count.step>ts_count_threshold].reset_index()
+        customer_category_pairs_for_ts = np.array(customer_category_trans_more_than_threshold[['customer','category']])
+        for c_m_p in tqdm(customer_category_pairs_for_ts):
+            c_m_p_records = self.df.loc[(self.df.customer==c_m_p[0])&( self.df.category==c_m_p[1])]
+            c_m_p_data = c_m_p_records[[time_col,value_col]]
+            c_m_p_data.rename(columns={time_col: "timestamp", value_col: "value"}, inplace=True)
+            save_file_path = os.path.join(data_dir, '{}_{}_transaction_data.csv'.format(c_m_p[0], c_m_p[1]))
+            ensure_directory(save_file_path)
+            c_m_p_data.to_csv(save_file_path, index=False)
+            #label data 
+            c_m_p_label = c_m_p_records[[time_col,label_col]]
+            c_m_p_label.rename(columns={time_col: "timestamp", label_col: "label"}, inplace=True)
+            label_file_path = os.path.join(label_dir, '{}_{}_transaction_label.csv'.format(c_m_p[0], c_m_p[1]))
+            ensure_directory(label_file_path)
+            c_m_p_label.to_csv(label_file_path, index=False)
+            
     
 class CSVtoStaticGraph():
     """
@@ -21,8 +40,8 @@ class CSVtoStaticGraph():
     models assume (e.g. node list and edge list)
     """
     
-    def __init__(self):
-        self.dataset = dataset
+    def __init__(self, df):
+        self.df = df
     
 class CSVtoDynamicGraph():
     """Convert raw csv data into format dynamic graph
