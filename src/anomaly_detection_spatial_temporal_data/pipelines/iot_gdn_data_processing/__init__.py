@@ -1,5 +1,5 @@
 """
-This is a boilerplate pipeline 'iot_data_processing'
+This is a boilerplate pipeline 'iot_gdn_data_processing'
 generated using Kedro 0.18.1
 """
 

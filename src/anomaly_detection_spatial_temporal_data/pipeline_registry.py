@@ -7,17 +7,17 @@ from kedro.pipeline import Pipeline
 VENV_INFO = os.environ["VIRTUAL_ENV"]
 
 if "gdn" in VENV_INFO:
-    from anomaly_detection_spatial_temporal_data.pipelines import iot_data_processing as idp
+    from anomaly_detection_spatial_temporal_data.pipelines import iot_gdn_data_processing as idp_gdn
     from anomaly_detection_spatial_temporal_data.pipelines import gdn
     
-    data_processing_pipeline = idp.create_pipeline()
+    data_processing_pipeline = idp_gdn.create_pipeline()
     model_pipeline = gdn.create_pipeline()
 
 if "ncad" in VENV_INFO:
-    from anomaly_detection_spatial_temporal_data.pipelines import iot_data_processing as idp
+    from anomaly_detection_spatial_temporal_data.pipelines import iot_ncad_data_processing as idp_ncad
     from anomaly_detection_spatial_temporal_data.pipelines import ncad
     
-    data_processing_pipeline = idp.create_pipeline()
+    data_processing_pipeline = idp_ncad.create_pipeline()
     model_pipeline = ncad.create_pipeline()
 
 def register_pipelines() -> Dict[str, Pipeline]:

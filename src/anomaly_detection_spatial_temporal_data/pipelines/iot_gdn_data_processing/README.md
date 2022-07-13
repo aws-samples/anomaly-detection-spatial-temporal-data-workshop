@@ -1,4 +1,4 @@
-# Pipeline iot_data_processing
+# Pipeline iot_gdn_data_processing
 
 > *Note:* This is a `README.md` boilerplate generated using `Kedro 0.18.1`.
 

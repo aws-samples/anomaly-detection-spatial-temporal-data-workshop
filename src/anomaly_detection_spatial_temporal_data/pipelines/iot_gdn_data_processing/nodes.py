@@ -1,5 +1,5 @@
 """
-This is a boilerplate pipeline 'iot_data_processing'
+This is a boilerplate pipeline 'iot_gdn_data_processing'
 generated using Kedro 0.18.1
 """
 
@@ -45,7 +45,7 @@ def get_sensor_columns(df: pd.DataFrame) -> List[str]:
     return [c for c in df.columns if c not in ["DATETIME", "ATT_FLAG"]]
     
     
-def append_anomaly_column(dataset_name: str, df: pd.DataFrame, label_column_name: str) -> pd.DataFrame:
+def append_anomaly_column(dataset_name: str, df: pd.DataFrame) -> pd.DataFrame:
     anomalies = ANOMALIES[dataset_name]
     
     fmt ="%d/%m/%Y %H"
@@ -57,9 +57,9 @@ def append_anomaly_column(dataset_name: str, df: pd.DataFrame, label_column_name
     df["pdDateTime"] = pd.to_datetime(df["DATETIME"], format="%d/%m/%y %H")
     df = df.set_index(["pdDateTime"])
 
-    df[label_column_name] = 0
+    df["attack"] = 0
     for start, end in anomalies_dt:
-        df.loc[start:end, label_column_name] = 1
+        df.loc[start:end, "attack"] = 1
         
     return df
 
@@ -86,14 +86,7 @@ def save_sensor_cols(sensor_columns: List[str]) -> None:
 def save_csv(
     df: pd.DataFrame, 
     sensor_columns: List[str], 
-    label_column_name: str,
+#     label_column_name: str,
 ) -> None:
     
-    # GDN
-    if label_column_name == "attack": 
-        return df[["timestamp"] + sensor_columns + [label_column_name]]
-    # NCAD
-    elif label_column_name == "label":
-        return df[sensor_columns + [label_column_name]]  
-    else:
-        raise NotImplementedError
+    return df[["timestamp"] + sensor_columns + ["attack"]]
