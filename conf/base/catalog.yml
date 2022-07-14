@@ -83,35 +83,80 @@ model_path:
 inference_result:
   type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
   filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/07_model_output/financial_fraud/inference_result.npz
-
-
 ###########################################################################################################################
 
+# File path for iot dataset 
+iot_data_train_clean:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/BATADAL_dataset03_train_no_anomaly.csv
+  
+iot_data_train_anom:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/BATADAL_dataset04_train_some_anomaly.csv
+  
+iot_data_test:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/BATADAL_test_dataset_some_anomaly.csv
+  
+iot_sensor_cols_txt:
+  type: text.TextDataSet
+  filepath: data/03_primary/iot_sensor_list_batadal.txt
+  
+iot_data_gdn_train:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot_gdn_train.csv
+  save_args:
+    index: False
 
+iot_data_gdn_train_anom:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot_gdn_train_anom.csv
+  save_args:
+    index: False
+  
+iot_data_gdn_test:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot_gdn_test.csv
+  save_args:
+    index: False
+    
+iot_data_ncad_train:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot_ncad_train.csv
+  save_args:
+    index: False
+    
+iot_data_ncad_train_anom:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot_ncad_train_anom.csv
+  save_args:
+    index: False
+    
+iot_data_ncad_test:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot_ncad_test.csv
+  save_args:
+    index: False
+    
+iot_test_inference_scores:
+  type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
+  filepath: data/07_model_output/ncad/inference_scores.npz
+  
+iot_test_inference_votes:
+  type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
+  filepath: data/07_model_output/ncad/inference_votes.npz
+  
+# iot_ncad_trainer_pickle:
+#   type: pickle.PickleDataSet
+#   filepath: data/06_models/trainer.pkl
 ###########################################################################################################################
 # File path for user behavior dataset 
 user_behavior_data:
   type: pandas.CSVDataSet
   filepath: None           
 ###########################################################################################################################
-
-###########################################################################################################################
-# File path for iot dataset 
-iot_data:
-  type: pandas.CSVDataSet
-  filepath: None
-###########################################################################################################################
-
-###########################################################################################################################
 # File path for wifi dataset 
 telecom_data_wifi:
-  type: pandas.CSVDataSet
-  filepath: None
-###########################################################################################################################
-
-###########################################################################################################################
-# File path for ITU dataset 
-telecom_data_itu_challenge: 
   type: pandas.CSVDataSet
   filepath: None
 ###########################################################################################################################
