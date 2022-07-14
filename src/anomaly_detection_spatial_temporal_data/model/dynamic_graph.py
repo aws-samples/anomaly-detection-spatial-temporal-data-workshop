@@ -12,211 +12,9 @@ import networkx as nx
 from transformers.modeling_bert import BertAttention, BertIntermediate, BertOutput, BertPreTrainedModel, BertPooler
 from transformers.configuration_utils import PretrainedConfig
 
-class TransformerEncoder(nn.Module):
-    """Encoder for Taddy Transformer"""
-    def __init__(self, config):
-        super(TransformerEncoder, self).__init__()
-        self.output_attentions = config.output_attentions
-        self.output_hidden_states = config.output_hidden_states
-        self.layer = nn.ModuleList([TransformerLayer(config) for _ in range(config.num_hidden_layers)])
+from anomaly_detection_spatial_temporal_data.model.components import BaseTransformer #components needed for TADDY
+from anomaly_detection_spatial_temporal_data.model.components import RGCN_Model #components needed for TADDY
 
-    def forward(self, hidden_states, attention_mask=None, head_mask=None, encoder_hidden_states=None, encoder_attention_mask=None):
-        all_hidden_states = ()
-        all_attentions = ()
-        for i, layer_module in enumerate(self.layer):
-            if self.output_hidden_states:
-                all_hidden_states = all_hidden_states + (hidden_states,)
-
-            layer_outputs = layer_module(hidden_states, attention_mask, head_mask[i], encoder_hidden_states, encoder_attention_mask)
-            hidden_states = layer_outputs[0]
-
-            if self.output_attentions:
-                all_attentions = all_attentions + (layer_outputs[1],)
-
-        # Add last layer
-        if self.output_hidden_states:
-            all_hidden_states = all_hidden_states + (hidden_states,)
-
-        outputs = (hidden_states,)
-        if self.output_hidden_states:
-            outputs = outputs + (all_hidden_states,)
-        if self.output_attentions:
-            outputs = outputs + (all_attentions,)
-        return outputs
-
-class EdgeEncoding(nn.Module):
-    """edge encoding for Taddy"""
-    def __init__(self, config):
-        super(EdgeEncoding, self).__init__()
-        self.config = config
-
-        self.inti_pos_embeddings = nn.Embedding(config.max_inti_pos_index, config.hidden_size)
-        self.hop_dis_embeddings = nn.Embedding(config.max_hop_dis_index, config.hidden_size)
-        self.time_dis_embeddings = nn.Embedding(config.max_hop_dis_index, config.hidden_size)
-
-        self.LayerNorm = nn.LayerNorm(config.hidden_size, eps=float(config.layer_norm_eps))
-        self.dropout = nn.Dropout(config.hidden_dropout_prob)
-
-    def forward(self, init_pos_ids=None, hop_dis_ids=None, time_dis_ids=None):
-
-        position_embeddings = self.inti_pos_embeddings(init_pos_ids)
-        hop_embeddings = self.hop_dis_embeddings(hop_dis_ids)
-        time_embeddings = self.hop_dis_embeddings(time_dis_ids)
-
-        embeddings = position_embeddings + hop_embeddings + time_embeddings
-        embeddings = self.LayerNorm(embeddings)
-        embeddings = self.dropout(embeddings)
-        return embeddings
-
-
-class TransformerLayer(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        self.attention = BertAttention(config)
-        self.is_decoder = config.is_decoder
-        if self.is_decoder:
-            self.crossattention = BertAttention(config)
-        self.intermediate = BertIntermediate(config)
-        self.output = BertOutput(config)
-
-    def forward(
-        self,
-        hidden_states,
-        attention_mask=None,
-        head_mask=None,
-        encoder_hidden_states=None,
-        encoder_attention_mask=None,
-    ):
-        self_attention_outputs = self.attention(hidden_states, attention_mask, head_mask)
-        attention_output = self_attention_outputs[0]
-        outputs = self_attention_outputs[1:]
-
-        if self.is_decoder and encoder_hidden_states is not None:
-            cross_attention_outputs = self.crossattention(
-                attention_output, attention_mask, head_mask, encoder_hidden_states, encoder_attention_mask
-            )
-            attention_output = cross_attention_outputs[0]
-            outputs = outputs + cross_attention_outputs[1:]
-
-        intermediate_output = self.intermediate(attention_output)
-        layer_output = self.output(intermediate_output, attention_output)
-        outputs = (layer_output,) + outputs
-        return outputs
-
-class BaseTransformer(BertPreTrainedModel):
-    data = None
-
-    def __init__(self, config):
-        super(BaseTransformer, self).__init__(config)
-        self.config = config
-
-        self.embeddings = EdgeEncoding(config)
-        self.encoder = TransformerEncoder(config)
-        self.pooler = BertPooler(config)
-
-        self.init_weights()
-
-    def get_input_embeddings(self):
-        return self.embeddings.raw_feature_embeddings
-
-    def set_input_embeddings(self, value):
-        self.embeddings.raw_feature_embeddings = value
-
-    def _prune_heads(self, heads_to_prune):
-        for layer, heads in heads_to_prune.items():
-            self.encoder.layer[layer].attention.prune_heads(heads)
-
-    def setting_preparation(self, input_ids=None, attention_mask=None, token_type_ids=None, position_ids=None, head_mask=None, inputs_embeds=None, encoder_hidden_states=None, encoder_attention_mask=None,):
-
-        if input_ids is not None and inputs_embeds is not None:
-            raise ValueError("You cannot specify both input_ids and inputs_embeds at the same time")
-        elif input_ids is not None:
-            input_shape = input_ids.size()
-        elif inputs_embeds is not None:
-            input_shape = inputs_embeds.size()[:-1]
-        else:
-            raise ValueError("You have to specify either input_ids or inputs_embeds")
-
-        device = input_ids.device if input_ids is not None else inputs_embeds.device
-
-        if attention_mask is None:
-            attention_mask = torch.ones(input_shape, device=device)
-        if token_type_ids is None:
-            token_type_ids = torch.zeros(input_shape, dtype=torch.long, device=device)
-
-        if attention_mask.dim() == 3:
-            extended_attention_mask = attention_mask[:, None, :, :]
-        elif attention_mask.dim() == 2:
-            if self.config.is_decoder:
-                batch_size, seq_length = input_shape
-                seq_ids = torch.arange(seq_length, device=device)
-                causal_mask = seq_ids[None, None, :].repeat(batch_size, seq_length, 1) <= seq_ids[None, :, None]
-                causal_mask = causal_mask.to(torch.long)  # not converting to long will cause errors with pytorch version < 1.3
-                extended_attention_mask = causal_mask[:, None, :, :] * attention_mask[:, None, None, :]
-            else:
-                extended_attention_mask = attention_mask[:, None, None, :]
-        else:
-            raise ValueError(
-                "Wrong shape for input_ids (shape {}) or attention_mask (shape {})".format(
-                    input_shape, attention_mask.shape
-                )
-            )
-
-        extended_attention_mask = extended_attention_mask.to(dtype=next(self.parameters()).dtype)  # fp16 compatibility
-        extended_attention_mask = (1.0 - extended_attention_mask) * -10000.0
-
-        if self.config.is_decoder and encoder_hidden_states is not None:
-            encoder_batch_size, encoder_sequence_length, _ = encoder_hidden_states.size()
-            encoder_hidden_shape = (encoder_batch_size, encoder_sequence_length)
-            if encoder_attention_mask is None:
-                encoder_attention_mask = torch.ones(encoder_hidden_shape, device=device)
-
-            if encoder_attention_mask.dim() == 3:
-                encoder_extended_attention_mask = encoder_attention_mask[:, None, :, :]
-            elif encoder_attention_mask.dim() == 2:
-                encoder_extended_attention_mask = encoder_attention_mask[:, None, None, :]
-            else:
-                raise ValueError(
-                    "Wrong shape for encoder_hidden_shape (shape {}) or encoder_attention_mask (shape {})".format(
-                        encoder_hidden_shape, encoder_attention_mask.shape
-                    )
-                )
-
-            encoder_extended_attention_mask = encoder_extended_attention_mask.to(dtype=next(self.parameters()).dtype)  # fp16 compatibility
-            encoder_extended_attention_mask = (1.0 - encoder_extended_attention_mask) * -10000.0
-        else:
-            encoder_extended_attention_mask = None
-
-        if head_mask is not None:
-            if head_mask.dim() == 1:
-                head_mask = head_mask.unsqueeze(0).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
-                head_mask = head_mask.expand(self.config.num_hidden_layers, -1, -1, -1, -1)
-            elif head_mask.dim() == 2:
-                head_mask = (
-                    head_mask.unsqueeze(1).unsqueeze(-1).unsqueeze(-1)
-                )  # We can specify head_mask for each layer
-            head_mask = head_mask.to(dtype=next(self.parameters()).dtype)
-        else:
-            head_mask = [None] * self.config.num_hidden_layers
-
-        return token_type_ids, extended_attention_mask, encoder_extended_attention_mask, head_mask
-
-
-    def forward(self, init_pos_ids, hop_dis_ids, time_dis_ids, head_mask=None):
-        if head_mask is None:
-            head_mask = [None] * self.config.num_hidden_layers
-
-        embedding_output = self.embeddings(init_pos_ids=init_pos_ids,
-                                           hop_dis_ids=hop_dis_ids, time_dis_ids=time_dis_ids)
-        encoder_outputs = self.encoder(embedding_output, head_mask=head_mask) #这里的输出是tuple，因为在某些设定下要输出别的信息（中间分析用）
-        sequence_output = encoder_outputs[0]
-        pooled_output = self.pooler(sequence_output)
-        outputs = (sequence_output, pooled_output,) + encoder_outputs[1:]
-        return outputs
-
-    def run(self):
-        pass
-    
 class Taddy(BertPreTrainedModel):
     """TADDY model is based on transformer"""
     learning_record_dict = {}
@@ -538,6 +336,317 @@ class Taddy(BertPreTrainedModel):
         self.train_model(self.config.max_epoch)
         return self.learning_record_dict, self.save_model_path
     
-class Eland():
-    def __init__(self):
-        pass    
+
+class Eland_e2e(object):
+    """Eland model class based on RGCN"""
+    def __init__(self, adj_matrix, lstm_dataloader, user_features, item_features,
+            labels, tvt_nids, u2index, p2index, idx2feats, dim_feats=300, cuda=0, hidden_size=128, n_layers=2,
+            epochs=400, seed=-1, lr=0.0001, weight_decay=1e-5, dropout=0.4, tensorboard=False,
+            log=True, name='debug', gnnlayer_type='gcn', rnn_type='lstm', pretrain_bm=25, pretrain_nc=300, alpha=0.05, bmloss_type='mse', device='cuda', base_pred=400):
+        self.lr = lr
+        self.weight_decay = weight_decay
+        self.n_epochs = epochs
+        self.pretrain_bm = pretrain_bm
+        self.pretrain_nc = pretrain_nc
+        self.n_classes = len(np.unique(labels))
+        self.alpha = alpha
+        self.labels = labels
+        self.train_nid, self.val_nid, self.test_nid = tvt_nids
+        self.bmloss_type = bmloss_type
+        self.base_pred = base_pred
+        if log:
+            self.logger = self.get_logger(name)
+        else:
+            self.logger = logging.getLogger()
+        # if not torch.cuda.is_available():
+        # 	cuda = -1
+        # self.device = torch.device(f'cuda:{cuda}' if cuda >= 0 else 'cpu')
+        self.device = device
+        # Log parameters for reference
+        all_vars = locals()
+        self.log_parameters(all_vars)
+        # Fix random seed if needed
+        if seed > 0:
+            np.random.seed(seed)
+            torch.manual_seed(seed)
+            torch.cuda.manual_seed_all(seed)
+        # load data
+        self.load_data(adj_matrix, user_features, item_features, self.labels, tvt_nids, gnnlayer_type, idx2feats)
+        idx2feats = torch.cuda.FloatTensor(idx2feats)
+        # idx2feats = idx2feats.to(self.device)
+        self.model = RGCN_Model(dim_feats, hidden_size, lstm_dataloader, self.n_classes, n_layers,
+                            u2idx = u2index, p2idx = p2index, idx2feats = idx2feats, dropout=dropout,
+                            device=self.device, rnn_type=rnn_type , gnnlayer_type=gnnlayer_type,
+                            activation=F.relu, bmloss_type=bmloss_type, base_pred=self.base_pred)
+
+    def scipysp_to_pytorchsp(self, sp_mx):
+        """ converts scipy sparse matrix to pytorch sparse matrix """
+        if not sp.isspmatrix_coo(sp_mx):
+            sp_mx = sp_mx.tocoo()
+        coords = np.vstack((sp_mx.row, sp_mx.col)).transpose()
+        values = sp_mx.data
+        shape = sp_mx.shape
+        pyt_sp_mx = torch.sparse.FloatTensor(torch.LongTensor(coords.T),
+                                             torch.FloatTensor(values),
+                                             torch.Size(shape))
+        return pyt_sp_mx
+
+    def load_data(self, adj_matrix, user_features, item_features, labels, tvt_nids, gnnlayer_type, idx2feats):
+        """Process data"""
+        if isinstance(user_features, torch.FloatTensor):
+            self.user_features = user_features
+        else:
+            self.user_features = torch.FloatTensor(user_features)
+
+        if isinstance(item_features, torch.FloatTensor):
+            self.item_features = item_features
+        else:
+            self.item_features = torch.FloatTensor(item_features)
+
+        # Normalize
+        self.user_features = F.normalize(self.user_features, p=1, dim=1)
+        self.item_features = F.normalize(self.item_features, p=1, dim=1)
+
+        if isinstance(labels, torch.LongTensor):
+            self.labels = labels
+        else:
+            self.labels = torch.LongTensor(labels)
+
+        assert sp.issparse(adj_matrix)
+        if not isinstance(adj_matrix, sp.coo_matrix):
+            adj_matrix = sp.coo_matrix(adj_matrix)
+        self.adj = self.scipysp_to_pytorchsp(adj_matrix).to_dense()
+
+    def pretrain_bm_net(self, n_epochs=25):
+        """ pretrain the behavioral modelling network """
+        optimizer = torch.optim.Adam(self.model.bm_net.parameters(), lr = self.lr*5)
+        if self.bmloss_type == 'mse':
+            criterion = MSELoss()
+        elif self.bmloss_type == 'cos':
+            criterion = CosineEmbeddingLoss()
+        self.model.bm_net.train()
+        self.model.bm_net.to(self.device)
+        for epoch in range(n_epochs):
+            self.model.bm_net.zero_grad()
+            optimizer.zero_grad()
+            cur_loss = []
+            for batch_idx, (uids, feats, _, feats_len) in enumerate(self.model.loader):
+                feats = feats.to(self.device).float()
+                loss = 0
+                out, out_len = self.model.bm_net(feats, feats_len)
+                for idx in np.arange(len(out_len)):
+                    if self.bmloss_type == 'cos':
+                        # loss += criterion(out[idx, :out_len[idx]-1, :], feats[idx, 1:out_len[idx], :], torch.cuda.LongTensor([1]))
+                        loss += criterion(out[idx, :out_len[idx]-1, :], feats[idx, 1:out_len[idx], :], torch.LongTensor([1]).to(self.device))
+                    else:
+                        loss += criterion(out[idx, :out_len[idx]-1, :], feats[idx, 1:out_len[idx], :])
+                # print('--------')
+                # print(torch.isnan(out[idx, :out_len[idx]-1, :]).sum(), torch.isnan(feats[idx, :out_len[idx]-1, :]).sum())
+                # print(torch.isnan(out).sum(), torch.isnan(feats).sum())
+                # print(loss)
+                loss.backward()
+                cur_loss.append(loss.item())
+                nn.utils.clip_grad_norm_(self.model.bm_net.parameters(), 5)
+                optimizer.step()
+                optimizer.zero_grad()
+                self.model.bm_net.zero_grad()
+            self.logger.info(f'BM Module pretrain, Epoch {epoch+1}/{n_epochs}: loss {round(np.mean(cur_loss), 8)}')
+
+    def pretrain_nc_net(self, n_epochs=300):
+        """ pretrain the node classification network """
+        optimizer = torch.optim.Adam(self.model.nc_net.parameters(), lr=self.lr, weight_decay=self.weight_decay)
+        best_val_auc = 0.
+        best_test_auc = 0.
+        best_res = None
+        criterion = F.nll_loss
+        self.model.nc_net.to(self.device)
+        self.user_features = self.user_features.to(self.device)
+        self.item_features = self.item_features.to(self.device)
+        self.labels = self.labels.to(self.device)
+
+        cnt_wait = 0
+        patience = 50
+        for epoch in range(n_epochs):
+            self.model.nc_net.train()
+            self.model.nc_net.zero_grad()
+            input_adj = self.adj.clone()
+            input_adj = input_adj.to(self.device)
+            nc_logits, _ = self.model.nc_net(input_adj, self.user_features, self.item_features)
+            loss = criterion(nc_logits[self.train_nid], self.labels[self.train_nid])
+            loss.backward()
+            optimizer.step()
+            optimizer.zero_grad()
+            # Detach from computation graph
+            self.adj = self.adj.detach()
+            # Validation
+            self.model.nc_net.eval()
+            with torch.no_grad():
+                input_adj = self.adj.clone()
+                input_adj = input_adj.to(self.device)
+                nc_logits_eval, _ = self.model.nc_net(input_adj, self.user_features, self.item_features)
+            res_training = self.eval_node_cls(nc_logits[self.train_nid].detach(), self.labels[self.train_nid], self.n_classes)
+            res = self.eval_node_cls(nc_logits_eval[self.val_nid], self.labels[self.val_nid], self.n_classes)
+
+            if res['auc'] > best_val_auc:
+                cnt_wait = 0
+                best_val_auc = res['auc']
+                test_auc = self.eval_node_cls(nc_logits_eval[self.test_nid], self.labels[self.test_nid], self.n_classes)['auc']
+                if test_auc > best_test_auc:
+                    best_test_auc = test_auc
+                    best_res = self.eval_node_cls(nc_logits_eval[self.test_nid], self.labels[self.test_nid], self.n_classes)
+                self.logger.info('NCNet pretrain, Epoch [{} / {}]: loss {:.4f}, training auc: {:.4f}, val_auc {:.4f}, test auc {:.4f}'
+                        .format(epoch+1, n_epochs, loss.item(), res_training['auc'], res['auc'], test_auc))
+            else:
+                cnt_wait += 1
+                self.logger.info('NCNet pretrain, Epoch [{} / {}]: loss {:.4f}, training auc: {:.4f}, val_auc {:.4f}'
+                        .format(epoch+1, n_epochs, loss.item(), res_training['auc'], res['auc']))
+
+            if cnt_wait >= patience:
+                self.logger.info('Early stop!')
+                break
+        self.logger.info('Best Test Results: auc {:.4f}, ap {:.4f}, f1 {:.4f}'.format(best_res['auc'], best_res['ap'], best_res['f1']))
+
+        return best_res['auc'], best_res['ap']
+
+    def train(self):
+        """ End-to-end training for bm_net and nc_net """
+        # For debugging
+        torch.autograd.set_detect_anomaly(True)
+        # Move variables to device if haven't done so
+        self.user_features = self.move_to_cuda(self.user_features, self.device)
+        self.item_features = self.move_to_cuda(self.item_features, self.device)
+        self.labels = self.move_to_cuda(self.labels, self.device)
+        self.model = self.model.to(self.device)
+        # Pretrain
+        if self.pretrain_bm > 0:
+            self.pretrain_bm_net(self.pretrain_bm)
+        if self.pretrain_nc > 0:
+            self.pretrain_nc_net(self.pretrain_nc)
+        # optimizers
+        optims = MultipleOptimizer(torch.optim.Adam(self.model.bm_net.parameters(), lr=self.lr),
+                                torch.optim.Adam(self.model.nc_net.parameters(), lr=self.lr, weight_decay=self.weight_decay))
+
+        criterion = F.nll_loss
+        best_test_auc = 0.
+        best_val_auc = 0.
+        best_res = None
+        cnt_wait = 0
+        patience = 70
+        # Training...
+        for epoch in range(self.n_epochs):
+            self.model.train()
+            self.model.zero_grad()
+            input_adj = self.adj.clone()
+            input_adj = input_adj.to(self.device)
+            nc_logits, modified_adj, bm_loss = self.model(input_adj, self.user_features, self.item_features, self.n_epochs, epoch)
+            loss = nc_loss = criterion(nc_logits[self.train_nid], self.labels[self.train_nid])
+            loss += bm_loss * self.alpha
+            optims.zero_grad()
+            loss.backward()
+            optims.step()
+            # Computation Graph
+            # Validation
+            self.model.eval()
+            with torch.no_grad():
+                input_adj = self.adj.clone()
+                input_adj = input_adj.to(self.device)
+                # nc_logits_eval_original, _ = self.model.nc_net(input_adj, self.user_features, self.item_features)
+                input_adj = self.adj.clone()
+                input_adj = input_adj.to(self.device)
+                nc_logits_eval_modified, _, _ = self.model(input_adj, self.user_features, self.item_features, self.n_epochs, epoch)
+            training_res = self.eval_node_cls(nc_logits[self.train_nid].detach(), self.labels[self.train_nid], self.n_classes)
+            # res = self.eval_node_cls(nc_logits_eval_original[self.val_nid], self.labels[self.val_nid], self.n_classes)
+            res_modified = self.eval_node_cls(nc_logits_eval_modified[self.val_nid], self.labels[self.val_nid], self.n_classes)
+            if res_modified['auc'] > best_val_auc:
+                cnt_wait = 0
+                best_val_auc = res_modified['auc']
+                # res_test = self.eval_node_cls(nc_logits_eval_original[self.test_nid], self.labels[self.test_nid], self.n_classes)
+                res_test_modified = self.eval_node_cls(nc_logits_eval_modified[self.test_nid], self.labels[self.test_nid], self.n_classes)
+                if res_test_modified['auc'] > best_test_auc:
+                    best_test_auc = res_test_modified['auc']
+                    best_res = res_test_modified
+                self.logger.info('Eland Training, Epoch [{}/{}]: loss {:.4f}, train_auc: {:.4f}, val_auc {:.4f}, test_auc {:.4f}'
+                        .format(epoch+1, self.n_epochs, loss.item(), training_res['auc'], res_modified['auc'], res_test_modified['auc']))
+            else:
+                cnt_wait += 1
+                self.logger.info('Eland Training, Epoch [{}/{}]: loss {:.4f}, train_auc: {:.4f}, val_auc {:.4f}'
+                        .format(epoch+1, self.n_epochs, loss.item(), training_res['auc'], res_modified['auc']))
+
+            if cnt_wait >= patience:
+                self.logger.info('Early stop!')
+                break
+        self.logger.info('Best Test Results: auc {:.4f}, ap {:.4f}, f1 {:.4f}'.format(best_res['auc'], best_res['ap'], best_res['f1']))
+
+        return best_res['auc'], best_res['ap']
+
+    def log_parameters(self, all_vars):
+        del all_vars['self']
+        del all_vars['adj_matrix']
+        del all_vars['user_features']
+        del all_vars['item_features']
+        del all_vars['labels']
+        del all_vars['tvt_nids']
+        del all_vars['lstm_dataloader']
+        del all_vars['u2index']
+        del all_vars['p2index']
+        del all_vars['idx2feats']
+        self.logger.info(f'Parameters: {all_vars}')
+
+    @staticmethod
+    def transform_mat(matrix):
+        """
+            Since in the original matrix, there are items that have zero degree, we add a small delta in order to calculate the norm properly
+        """
+        delta = 1e-5
+        matrix = matrix + delta
+        return matrix
+
+    @staticmethod
+    def move_to_cuda(var, device):
+        if not var.is_cuda:
+            return var.to(device)
+        else:
+            return var
+
+    @staticmethod
+    def get_logger(name):
+        logger = logging.getLogger(name)
+        if (logger.hasHandlers()):
+            logger.handlers.clear()
+        logger.setLevel(logging.INFO)
+        # Foramtter
+        formatter = logging.Formatter('%(asctime)s - %(message)s')
+        # console handler
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.DEBUG)
+        ch.setFormatter(formatter)
+        logger.addHandler(ch)
+        # create file handler
+        if name is not None:
+            fh = logging.FileHandler(f'logs/ELANDe2e-{name}.log')
+            fh.setFormatter(formatter)
+            fh.setLevel(logging.INFO)
+            logger.addHandler(fh)
+        return logger
+
+    @staticmethod
+    def eval_node_cls(logits, labels, n_classes):
+        logits = logits.cpu().numpy()
+        y_pred = np.argmax(logits, axis=1)
+        logits = logits.T[1]
+        labels = labels.cpu().numpy()
+
+        # fpr, tpr, _ = roc_curve(labels, logits, pos_label=1)
+        roc_auc = roc_auc_score(labels, logits)
+        # precisions, recalls, _ = precision_recall_curve(labels, logits, pos_label=1)
+        ap = average_precision_score(labels, logits, pos_label = 1)
+        f1 = f1_score(labels, y_pred)
+        conf_mat = np.zeros((n_classes, n_classes))
+        results = {
+            'f1': f1,
+            'ap': ap,
+            'conf': conf_mat,
+            'auc': roc_auc
+        }
+
+        return results
