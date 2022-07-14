@@ -20,7 +20,7 @@ from .GDN import GDN
 
 from .train import train
 from .test  import test
-from .evaluate import get_err_scores, get_best_performance_data, get_val_performance_data, get_full_err_scores
+from .evaluate import get_err_scores, get_best_performance_data, get_val_performance_data, get_full_err_scores, get_pred_from_scores
 
 import sys
 from datetime import datetime
@@ -199,69 +199,19 @@ class GDNTrainer():
             Path(dirname).mkdir(parents=True, exist_ok=True)
 
         return paths
-
-if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('-batch', help='batch size', type = int, default=128)
-    parser.add_argument('-epoch', help='train epoch', type = int, default=100)
-    parser.add_argument('-slide_win', help='slide_win', type = int, default=15)
-    parser.add_argument('-dim', help='dimension', type = int, default=64)
-    parser.add_argument('-slide_stride', help='slide_stride', type = int, default=5)
-    parser.add_argument('-checkpoint_save_dir', help='save path pattern', type = str, default='')
-    parser.add_argument('-dataset', help='wadi / swat', type = str, default='wadi')
-    parser.add_argument('-device', help='cuda / cpu', type = str, default='cuda')
-    parser.add_argument('-random_seed', help='random seed', type = int, default=0)
-    parser.add_argument('-comment', help='experiment comment', type = str, default='')
-    parser.add_argument('-out_layer_num', help='outlayer num', type = int, default=1)
-    parser.add_argument('-out_layer_inter_dim', help='out_layer_inter_dim', type = int, default=256)
-    parser.add_argument('-decay', help='decay', type = float, default=0)
-    parser.add_argument('-val_ratio', help='val ratio', type = float, default=0.1)
-    parser.add_argument('-topk', help='topk num', type = int, default=20)
-    parser.add_argument('-report', help='best / val', type = str, default='best')
-    parser.add_argument('-load_model_path', help='trained model path', type = str, default='')
-
-    args = parser.parse_args()
-
-    random.seed(args.random_seed)
-    np.random.seed(args.random_seed)
-    torch.manual_seed(args.random_seed)
-    torch.cuda.manual_seed(args.random_seed)
-    torch.cuda.manual_seed_all(args.random_seed)
-    torch.backends.cudnn.benchmark = False
-    torch.backends.cudnn.deterministic = True
-    os.environ['PYTHONHASHSEED'] = str(args.random_seed)
-
-
-    train_config = {
-        'batch': args.batch,
-        'epoch': args.epoch,
-        'slide_win': args.slide_win,
-        'dim': args.dim,
-        'slide_stride': args.slide_stride,
-        'comment': args.comment,
-        'seed': args.random_seed,
-        'out_layer_num': args.out_layer_num,
-        'out_layer_inter_dim': args.out_layer_inter_dim,
-        'decay': args.decay,
-        'val_ratio': args.val_ratio,
-        'topk': args.topk,
-    }
-
-    env_config={
-        'checkpoint_save_dir': args.checkpoint_save_dir,
-        'dataset': args.dataset,
-        'report': args.report,
-        'device': args.device,
-        'load_model_path': args.load_model_path
-    }
     
+    def predict(self):
+        best_model = self.model.to(self.device)
 
-    main = Main(train_config, env_config, debug=False)
-    main.run()
-
-
-
-
-
+        _, self.val_result = test(best_model, self.val_dataloader)
+        _, self.test_result = test(best_model, self.test_dataloader)
+        
+        feature_num = len(self.test_result[0][0])
+        np_test_result = np.array(self.test_result)
+        
+        test_labels = np_test_result[2, :, 0].tolist()
+        test_scores, normal_scores = get_full_err_scores(self.test_result, self.val_result)
+        
+        pred, labels = get_pred_from_scores(test_scores, test_labels, topk=1) 
+        
+        return pred, labels

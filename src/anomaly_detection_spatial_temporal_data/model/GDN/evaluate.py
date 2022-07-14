@@ -157,3 +157,28 @@ def get_best_performance_data(total_err_scores, gt_labels, topk=1):
 
     return max(final_topk_fmeas), pre, rec, auc_score, thresold
 
+def get_pred_from_scores(total_err_scores, gt_labels, topk=1):
+
+    total_features = total_err_scores.shape[0]
+
+    # topk_indices = np.argpartition(total_err_scores, range(total_features-1-topk, total_features-1), axis=0)[-topk-1:-1]
+    topk_indices = np.argpartition(total_err_scores, range(total_features-topk-1, total_features), axis=0)[-topk:]
+
+    total_topk_err_scores = []
+    topk_err_score_map=[]
+
+    total_topk_err_scores = np.sum(np.take_along_axis(total_err_scores, topk_indices, axis=0), axis=0)
+
+    final_topk_fmeas ,thresolds = eval_scores(total_topk_err_scores, gt_labels, 400, return_thresold=True)
+
+    th_i = final_topk_fmeas.index(max(final_topk_fmeas))
+    thresold = thresolds[th_i]
+
+    pred_labels = np.zeros(len(total_topk_err_scores))
+    pred_labels[total_topk_err_scores > thresold] = 1
+
+    for i in range(len(pred_labels)):
+        pred_labels[i] = int(pred_labels[i])
+        gt_labels[i] = int(gt_labels[i])
+        
+    return pred_labels, gt_labels
