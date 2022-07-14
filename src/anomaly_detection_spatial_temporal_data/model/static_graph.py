@@ -82,8 +82,3 @@ class HeteroRGCN(nn.Module):
         # return the probability to be One
         return softmax_logits
     
-    
-class GDN():
-    def __init__(self):
-        pass    
-    
