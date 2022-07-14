@@ -32,7 +32,7 @@ We found and used different datasets for different use cases for this hands-on t
 ## Model Summary 
 
 ## Mind Map 
-![Determine model framework based on your data format, dimensionality and anomaly type](img/mind_map.png)
+![Determine model framework based on your data format, dimensionality and anomaly type](img/mindmap.png)
 
 ## Run the pipelines 
 ![Kedro pipeline design](img/pipeline_design.png)
@@ -70,6 +70,7 @@ kedro run -h
 #### For Reddit user behavior use case
 ### Instructions on running notebooks
 You can select the custom kernel after installing the corresponding virtual environment for each use case. 
+![Select your custom kernel](img/custom_kernel.png)
 #### For financial fraud use case 
 
 
