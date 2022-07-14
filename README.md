@@ -32,12 +32,10 @@ We found and used different datasets for different use cases for this hands-on t
 ## Model Summary 
 
 ## Mind Map 
+![Determine model framework based on your data format, dimensionality and anomaly type](img/mind_map.png)
 
 ## Run the pipelines 
-
-This is your new Kedro project, which was generated using `Kedro 0.18.0`.
-
-Take a look at the [Kedro documentation](https://kedro.readthedocs.io) to get started.
+![Kedro pipeline design](img/pipeline_design.png)
 
 ### Instructions on running Kedro pipeline 
 
