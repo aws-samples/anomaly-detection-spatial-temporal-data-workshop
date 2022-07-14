@@ -59,8 +59,28 @@ For more details, you can run the command:
 ```
 kedro run -h
 ```
+#### For financial fraud use case 
+
+
+#### For IoT network anomaly use case 
+
+
+#### For Wifi network anomaly use case
+
+
+#### For Reddit user behavior use case
 ### Instructions on running notebooks
 You can select the custom kernel after installing the corresponding virtual environment for each use case. 
+#### For financial fraud use case 
+
+
+#### For IoT network anomaly use case 
+
+
+#### For Wifi network anomaly use case
+
+
+#### For Reddit user behavior use case
 
 ## Outline of the Tutorial
 
