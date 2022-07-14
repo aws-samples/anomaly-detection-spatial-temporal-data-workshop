@@ -1,0 +1,37 @@
+# This is a boilerplate parameters config generated for pipeline 'gdn'
+# using Kedro 0.18.1.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://kedro.readthedocs.io/en/0.18.1/kedro_project_setup/configuration.html#parameters
+
+# no clean way to do this
+env_config:
+  checkpoint_save_dir: 'data/07_model_output/'
+  report: 'best'
+  device: 'cpu'
+  load_model_path: ''
+
+train_config:
+  seed: 5
+  batch: 32
+  slide_win: 5
+  dim: 64
+  out_layer_num: 1
+  slide_stride: 1
+  topk: 5
+  out_layer_inter_dim: 128
+  val_ratio: 0.2
+  decay: 0
+  epoch: 3
+  comment: ''
+
+
+
+
+
+
+
+
+
+
+

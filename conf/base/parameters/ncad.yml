@@ -1,0 +1,49 @@
+# This is a boilerplate parameters config generated for pipeline 'ncad'
+# using Kedro 0.18.1.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://kedro.readthedocs.io/en/0.18.1/kedro_project_setup/configuration.html#parameters
+
+model_dir: 'data/07_model_output/ncad/'
+log_dir: 'data/07_model_output/ncad/logs/'
+evaluation_result_path: 'data/07_model_output/ncad/evaluation'
+
+## General
+exp_name: 'batadal-ncad'
+## For trainer
+epochs: 3 
+limit_val_batches: 1.0 
+num_sanity_val_steps: 1 
+## For injection
+injection_method: 'local_outliers' 
+ratio_injected_spikes: 0.1 
+## For DataLoader
+window_length: 500 
+suspect_window_length: 10 
+num_series_in_train_batch: 1 
+num_crops_per_series: 32 
+num_workers_loader: 0 
+## For model definition
+# hpars for encoder
+tcn_kernel_size: 7 
+tcn_layers: 1
+tcn_out_channels: 16 
+tcn_maxpool_out_channels: 32 
+embedding_rep_dim: 64 
+normalize_embedding: True 
+# hpars for classifier
+distance: 'cosine' 
+classifier_threshold: 0.5 
+threshold_grid_length_val: 0.10 
+threshold_grid_length_test: 0.05 
+# hpars for anomalizers
+coe_rate: 0.5 
+mixup_rate: 2.0 
+# hpars for optimizer
+learning_rate: 0.0001
+# hpars for validation and test
+check_val_every_n_epoch: 25 
+stride_roll_pred_val_test: 5 
+val_labels_adj: True 
+test_labels_adj: True 
+max_windows_unfold_batch: 5000 
