@@ -63,7 +63,6 @@ class GDNTrainer():
         train_dataset_indata = construct_data(train, feature_map, labels=0)
         test_dataset_indata = construct_data(test, feature_map, labels=test.attack.tolist())
 
-
         cfg = {
             'slide_win': train_config['slide_win'],
             'slide_stride': train_config['slide_stride'],
@@ -71,7 +70,7 @@ class GDNTrainer():
 
         train_dataset = TimeDataset(train_dataset_indata, fc_edge_index, mode='train', config=cfg)
         test_dataset = TimeDataset(test_dataset_indata, fc_edge_index, mode='test', config=cfg)
-
+        print('test_data', len(test_dataset))
 
         train_dataloader, val_dataloader = self.get_loaders(train_dataset, train_config['seed'], train_config['batch'], val_ratio = train_config['val_ratio'])
 
@@ -205,6 +204,7 @@ class GDNTrainer():
 
         _, self.val_result = test(best_model, self.val_dataloader)
         _, self.test_result = test(best_model, self.test_dataloader)
+        
         
         feature_num = len(self.test_result[0][0])
         np_test_result = np.array(self.test_result)
