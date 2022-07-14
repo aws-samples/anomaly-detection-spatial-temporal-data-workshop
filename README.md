@@ -10,17 +10,23 @@ We declared dependencies for different pipelines for different use cases and pre
 For example, to run the financial fraud detection pipeline using the TADDY(dynamic graph based) modeling framework, follow these steps below: 
 1. Prepare the Kedro Taddy virtual environment 
 Run the following command:
+```
+```
 
 2. Activate the virtual environment
 Run the following command:
+```
+```
 
-4. Run the pipeline 
+3. Run the pipeline 
 Note that kedro pipeline has to be initiated from the repo root directory. So run the following command: 
+```
+```
 
 [insert a kedro pipeline visualization here]
 
 ## Data Summary
-
+We found and used different datasets for different use cases for this hands-on tutorial to cover enough variations in raw data format and structure. We illustrated different ways to convert the raw data to intermediate data that can be consumed in different modeling framework.  
 
 ## Model Summary 
 
@@ -32,13 +38,21 @@ This is your new Kedro project, which was generated using `Kedro 0.18.0`.
 
 Take a look at the [Kedro documentation](https://kedro.readthedocs.io) to get started.
 
-### How to run your Kedro pipeline
+### Instructions on running Kedro pipeline 
 
-You can run your Kedro project with:
+You can run the entire pipeline for one use case with the corresponding activated virtual environment:
 
 ```
 kedro run
 ```
+You can also run your specific Kedro project with:
+
+```
+kedro run --pipeline <pipeline_name_in_registry>
+```
+### Instructions on running notebooks
+You can select the custom kernel after installing the corresponding virtual environment for each use case. 
+
 ## Outline of the Tutorial
 
 
