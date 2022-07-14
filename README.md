@@ -4,27 +4,35 @@
 This github repo is prepared for KDD 2022 hands-on tutorial. The project pipelines are prepared using the templates from [Kedro](https://kedro.readthedocs.io/en/stable/) 0.18.0. Kedro is an open-source Python framework for creating reproducible, maintainable and modular data science code. It borrows concepts from software engineering and applies them to machine-learning code; applied concepts include modularity, separation of concerns and versioning.  
 "Kedro is a development workflow framework which aims to become the industry standard for developing production-ready code. Kedro helps structure your data pipeline using software engineering principles, eliminating project delays due to code rewrites and thereby providing more time to focus on building robust pipelines. Additionally, the framework provides a standardised approach to collaboration for teams building robust, scalable, deployable, reproducible and versioned data pipelines." --QuantumBlack, a McKinsey company
 
+[insert a kedro pipeline visualization here]
 
 ## Setting up the environment
 
 We declared dependencies for different pipelines for different use cases and prepared shell script to install the virtual environment. Once the virtual environment is installed, you can run the notebook using the customized env/kernel. Also, user can run the corresponding pipeline after activating the virtual env. 
 For example, to run the financial fraud detection pipeline using the TADDY(dynamic graph based) modeling framework, follow these steps below: 
 1. Prepare the Kedro Taddy virtual environment 
-Run the following command:
+Run the following command from the repo root directory:
+
 ```
+cd src
+bash prepare_taddy_environment.sh
 ```
 
 2. Activate the virtual environment
-Run the following command:
+After you install the virtual environment, you should see a folder with the name `kedro-taddy-venv`. 
+Activate the virtual environment by running the following command:
 ```
+source kedro-taddy-venv/bin/activate
 ```
+Please change the virtual env name accordingly based on which virtual environment you just installed. 
 
 3. Run the pipeline 
 Note that kedro pipeline has to be initiated from the repo root directory. So run the following command: 
 ```
+cd ..
+kedro run 
 ```
 
-[insert a kedro pipeline visualization here]
 
 ## Outline of the Tutorial
 
