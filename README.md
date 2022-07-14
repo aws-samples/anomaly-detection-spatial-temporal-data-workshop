@@ -26,6 +26,8 @@ Note that kedro pipeline has to be initiated from the repo root directory. So ru
 
 [insert a kedro pipeline visualization here]
 
+## Outline of the Tutorial
+
 ## Data Summary
 We found and used different datasets for different use cases for this hands-on tutorial to cover enough variations in raw data format and structure. We illustrated different ways to convert the raw data to intermediate data that can be consumed in different modeling framework.  
 
@@ -49,11 +51,18 @@ You can also run your specific Kedro pipeline(sub-pipeline) with:
 ```
 kedro run --pipeline <pipeline_name_in_registry>
 ```
+If you want to run the pipeline with specific tags, you can run: 
+```
+kedro run --pipeline <pipeline_name_in_registry> --tag <data_tag,model_tag>
+```
+
 You can even run your specific Kedro node function in the pipeline(sub-pipeline) with:
 
 ```
 kedro run --node <node_name_in_registry>
 ```
+
+
 For more details, you can run the command:
 ```
 kedro run -h
@@ -69,7 +78,7 @@ kedro run -h
 
 #### For Reddit user behavior use case
 ### Instructions on running notebooks
-You can select the custom kernel after installing the corresponding virtual environment for each use case. 
+You can select the custom kernel after installing the corresponding virtual environment for each use case. For example, to run pipeline under the NCAD modeling framework, you can select the following icon on the instance
 
 ![Select your custom kernel](img/custom_kernel.png)
 #### For financial fraud use case 
@@ -83,7 +92,7 @@ You can select the custom kernel after installing the corresponding virtual envi
 
 #### For Reddit user behavior use case
 
-## Outline of the Tutorial
+
 
 ## References 
 1. Subutai Ahmad, Alexander Lavin, Scott Purdy, and Zuha Agha. 2017. Unsupervised real-time anomaly detection for streaming data. 
