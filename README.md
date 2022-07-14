@@ -70,6 +70,7 @@ kedro run -h
 #### For Reddit user behavior use case
 ### Instructions on running notebooks
 You can select the custom kernel after installing the corresponding virtual environment for each use case. 
+
 ![Select your custom kernel](img/custom_kernel.png)
 #### For financial fraud use case 
 
