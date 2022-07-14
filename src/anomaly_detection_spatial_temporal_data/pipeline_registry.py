@@ -12,10 +12,12 @@ if "taddy" in VENV_INFO:
     data_processing_pipeline = fdp.create_pipeline()
     model_pipeline = dgmodel.create_pipeline()
 
-if 'nab' in VENV_INFO:
+if "nab" in VENV_INFO:
     from anomaly_detection_spatial_temporal_data.pipelines import financial_data_processing_to_ts as fdp_ts
+    from anomaly_detection_spatial_temporal_data.pipelines import iot_nab_data_processing as idp_ts
     from anomaly_detection_spatial_temporal_data.pipelines import nab_model 
-    data_processing_pipeline = fdp_ts.create_pipeline()
+    
+    data_processing_pipeline = fdp_ts.create_pipeline() + idp_ts.create_pipeline()
     model_pipeline = nab_model.create_pipeline()
 
 if "gdn" in VENV_INFO:

@@ -16,6 +16,7 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="run_nab_model_node",
             ),
 
-        ]
+        ],
+        tags="nab"
     )
 

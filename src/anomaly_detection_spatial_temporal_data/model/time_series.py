@@ -30,7 +30,7 @@ class TimeSeries():
     
 
 class NABAnomalyDetector:
-    def __init__(self, model_to_use: str, model_path: str, input_path: str, output_path: str):
+    def __init__(self, model_to_use: str, model_path: str, input_path: str, label_path: str, output_path: str):
         assert model_to_use in AVAILABLE_MODELS, (
             f"{model_to_use} is not an available algorithm.\n "
             f"Available models are {AVAILABLE_MODELS}"
@@ -38,6 +38,7 @@ class NABAnomalyDetector:
         self.model_name = model_to_use
         self.model_path = model_path
         self.input_path = input_path
+        self.label_path = label_path
         self.output_path = output_path
         self.nab_path = Path(self.model_path).resolve()
         if not self.nab_path.exists():
@@ -79,7 +80,7 @@ class NABAnomalyDetector:
         python3 run.py -d {self.model_name} --detect --skipConfirmation \
         --dataDir {Path(self.input_path).resolve()} \
         --resultsDir {output_dir_path} \
-        --windowsFile {dummy_label_path}
+        --windowsFile {Path(self.label_path).resolve()}
         """
         print("Predicting ...")
         process = subprocess.run(
