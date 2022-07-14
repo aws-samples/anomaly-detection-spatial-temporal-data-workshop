@@ -1,4 +1,4 @@
-# Anomaly Detection For Spatial Temporal Data
+# KDD 2022 Hands-on Tutorial: Anomaly Detection For Spatial Temporal Data
 
 ## Overview
 This github repo is prepared for KDD 2022 hands-on tutorial. The project pipelines are prepared using the templates from Kedro 0.18.0. 
