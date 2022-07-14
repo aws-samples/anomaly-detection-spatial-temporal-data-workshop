@@ -45,10 +45,19 @@ You can run the entire pipeline for one use case with the corresponding activate
 ```
 kedro run
 ```
-You can also run your specific Kedro project with:
+You can also run your specific Kedro pipeline(sub-pipeline) with:
 
 ```
 kedro run --pipeline <pipeline_name_in_registry>
+```
+You can even run your specific Kedro node function in the pipeline(sub-pipeline) with:
+
+```
+kedro run --node <node_name_in_registry>
+```
+For more details, you can run the command:
+```
+kedro run -h
 ```
 ### Instructions on running notebooks
 You can select the custom kernel after installing the corresponding virtual environment for each use case. 
