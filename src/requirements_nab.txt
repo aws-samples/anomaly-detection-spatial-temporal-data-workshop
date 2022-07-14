@@ -1,0 +1,5 @@
+kedro==0.18.0
+juliacall==0.4.3
+ipykernel==6.15.1
+tqdm
+matplotlib

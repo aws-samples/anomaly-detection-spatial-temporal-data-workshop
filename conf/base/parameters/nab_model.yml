@@ -1,0 +1,10 @@
+# This is a boilerplate parameters config generated for pipeline 'nab_model'
+# using Kedro 0.18.0.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://kedro.readthedocs.io/en/0.18.0/kedro_project_setup/configuration.html#parameters
+nab_model_options:
+  model_name: 'contextOSE'
+  model_path: '/home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/src/anomaly_detection_spatial_temporal_data/model/NAB'
+  input_dir: "/home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/02_intermediate/financial_fraud/ts_data"
+  output_dir: "/home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/07_model_output/financial_fraud/ts_result"
