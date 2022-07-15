@@ -4,7 +4,10 @@
 This github repo is prepared for KDD 2022 hands-on tutorial. The project pipelines are prepared using the templates with [Kedro](https://kedro.readthedocs.io/en/stable/) 0.18.0. Kedro is an open-source Python framework for creating reproducible, maintainable and modular data science code. It borrows concepts from software engineering and applies them to machine-learning code; applied concepts include modularity, separation of concerns and versioning.  
 "Kedro is a development workflow framework which aims to become the industry standard for developing production-ready code. Kedro helps structure your data pipeline using software engineering principles, eliminating project delays due to code rewrites and thereby providing more time to focus on building robust pipelines. Additionally, the framework provides a standardised approach to collaboration for teams building robust, scalable, deployable, reproducible and versioned data pipelines." --QuantumBlack, a McKinsey company
 
-[insert a kedro pipeline visualization here]
+An example of Kedro solution pipeline is shown below. 
+![Pipeline design diagram](/img/kedro_pipeline_viz.png)
+
+If you want to visualize the Kedro pipeline, please follow the instruction [here](https://kedro.readthedocs.io/en/0.18.0/tutorial/visualise_pipeline.html). For this tutorial, we will skip this part. 
 
 ## Setting up the environment
 
@@ -36,16 +39,39 @@ kedro run
 
 ## Outline of the Tutorial
 
-## Data Summary
-We found and used different datasets for different use cases for this hands-on tutorial to cover enough variations in raw data format and structure. We illustrated different ways to convert the raw data to intermediate data that can be consumed in different modeling framework.  
+I. Introduction of authors and welcome to KDD [5 mins]
+II. Overview [10 mins]
+ - Overview of use-cases
+   - Telecom
+   - Consumer behavior
+   - Financial
+   - IoT
+ - Overview of algorithms
+   - NAB
+   - NCAD
+   - Eland
+   - GDN
+   - Taddy
+ - Mindmap 
+   - Determine the right modeling framework for your data and anomaly type
+ - Overview of code repository
+ 
+III. AWS Account and Environment Setup [20 mins]
+IV. In depth detail of algorithms [20 mins]
+ - NAB
+ - NCAD
+ - Eland
+ - GDN
+ - Taddy
+ 
+V. Hands-on [2 hours]
+ - Downloading data sets
+ - Setting up local environments
+ - Training models using Kedro pipelines
+ - Training models using Jupyter Notebooks
 
-## Model Summary 
-
-## Mind Map 
-![Determine model framework based on your data format, dimensionality and anomaly type](img/mindmap.png)
-
-## Run the pipelines 
-![Kedro pipeline design](img/pipeline_design.png)
+ 
+VI. Conclusion and Take-away [5 mins]
 
 ### Instructions on running Kedro pipeline 
 
