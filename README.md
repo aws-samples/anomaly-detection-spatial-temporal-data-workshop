@@ -122,4 +122,7 @@ You can select the custom kernel after installing the corresponding virtual envi
 17. Li Zheng, Zhenpeng Li, Jian Li, Zhao Li, and Jun Gao. 2019. AddGraph: Anomaly Detection in Dynamic Graph Using Attention-based Temporal GCN. 
 
 ## Trouble shooting 
-
+On Debian/Ubuntu systems, you need to install the python3-venv
+package using the following command.
+  
+    apt-get install python3-venv
