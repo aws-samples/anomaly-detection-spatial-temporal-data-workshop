@@ -74,9 +74,7 @@ V. Hands-on [2 hours]
 VI. Conclusion and Take-away [5 mins]
 
 ### Instructions on running Kedro pipeline 
-
 You can run the entire pipeline for one use case with the corresponding activated virtual environment:
-
 ```
 kedro run
 ```
@@ -89,34 +87,35 @@ If you want to run the pipeline with specific tags, you can run:
 ```
 kedro run --pipeline <pipeline_name_in_registry> --tag <data_tag,model_tag>
 ```
-
 You can even run your specific Kedro node function in the pipeline(sub-pipeline) with:
 
 ```
 kedro run --node <node_name_in_registry>
 ```
-
-
 For more details, you can run the command:
 ```
 kedro run -h
 ```
-#### For financial fraud use case 
 
+#### For financial fraud use case 
+You can run NAB and TADDY modeling framework for the financial fraud use case. For NAB, time series of amount spent for each unique (customer, category) pair is constructed. For TADDY, a dynamic interaction graph between customer and merchant is built. Each edge represents a transaction record between the customer and merchant.
 
 #### For IoT network anomaly use case 
-
+You can run NAB, NCAD and GDN modeling framework for the IoT network anomaly use case. 
 
 #### For Wifi network anomaly use case
-
+You can run NAB and GDN modeling framework for the Wifi network anomaly use case. 
 
 #### For Reddit user behavior use case
+You can run ELAND modeling framework for the Reddit user behavior anomaly use case. 
+
 ### Instructions on running notebooks
 You can select the custom kernel after installing the corresponding virtual environment for each use case. For example, to run pipeline under the NCAD modeling framework, you can select the following icon on the instance
 
 ![Select your custom kernel](img/custom_kernel.png)
-#### For financial fraud use case 
 
+#### For financial fraud use case 
+Under *notebooks/financial_fraud*, choose `kedro-taddy-venv` for notebook 1.0, 1.1, 2.1, 3.1. Choose `kedro-nab-venv` for notebook 1.2, 2.2. 
 
 #### For IoT network anomaly use case 
 
