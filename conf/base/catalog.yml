@@ -46,43 +46,43 @@
 # File path for financial fraud dataset 
 financial_data:
   type: pandas.CSVDataSet
-  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/01_raw/financial_fraud/bs140513_032310.csv
+  filepath: data/01_raw/financial_fraud/bs140513_032310.csv
 
 processed_node_id:
   type: pandas.CSVDataSet
-  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/02_intermediate/financial_fraud/node_id.csv
+  filepath: data/02_intermediate/financial_fraud/node_id.csv
 
 processed_edge_list:
   type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
-  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/02_intermediate/financial_fraud/edge_list.npz
+  filepath: data/02_intermediate/financial_fraud/edge_list.npz
 
 processed_edge_label:
   type: pandas.CSVDataSet
-  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/02_intermediate/financial_fraud/edge_label.csv
+  filepath: data/02_intermediate/financial_fraud/edge_label.csv
 
 preprocessed_graph_data:
   type: pickle.PickleDataSet
-  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/03_primary/financial_fraud/training_data.pkl
+  filepath: data/03_primary/financial_fraud/training_data.pkl
 
 preprocessed_adj_matrix_eigen_data:
   type: pickle.PickleDataSet
-  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/05_model_input/financial_fraud/eigen.pkl
+  filepath: data/05_model_input/financial_fraud/eigen.pkl
 
 data_dict:
   type: pickle.PickleDataSet
-  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/05_model_input/financial_fraud/data_dict.pkl
+  filepath: data/05_model_input/financial_fraud/data_dict.pkl
   
 train_result:
   type: pickle.PickleDataSet
-  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/07_model_output/financial_fraud/train_result.pkl
+  filepath: data/07_model_output/financial_fraud/train_result.pkl
 
 model_path:
   type: text.TextDataSet
-  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/07_model_output/financial_fraud/model_path.txt
+  filepath: data/07_model_output/financial_fraud/model_path.txt
   
 inference_result:
   type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
-  filepath: /home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/07_model_output/financial_fraud/inference_result.npz
+  filepath: data/07_model_output/financial_fraud/inference_result.npz
 ###########################################################################################################################
 
 # File path for iot dataset 

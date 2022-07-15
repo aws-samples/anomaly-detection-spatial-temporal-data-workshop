@@ -1,7 +1,4 @@
 """Reference: https://github.com/yuetan031/TADDY_pytorch"""
-import sys 
-sys.path.append('../../src/anomaly_detection_spatial_temporal_data/')
-
 import torch
 import numpy as np
 import scipy.sparse as sp
