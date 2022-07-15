@@ -24,6 +24,7 @@ def set_and_run_model(parameters: Dict) -> Tuple:
         parameters['model_name'], 
         parameters['model_path'],
         parameters['input_dir'],
+        parameters['label_path'],
         parameters['output_dir'],
         
     )
