@@ -54,10 +54,10 @@ def create_pipeline(**kwargs) -> Pipeline:
                     "sensor_column_names",
                     "params:nab_ts_process_options_iot"
                 ],
-                outputs=None,
+                outputs="iot_processed_ts_label",
                 name="split_and_save"
             )
             
         ],
-        tags="iot_nab_data_processing"
+        tags="iot_nab_data_processing" #add a tag here for choice in kero run
     )

@@ -61,6 +61,7 @@ def split_csv_and_save(
             anomaly_dict[f"{c}.csv"].append([
                 s_anom.strftime('%Y-%m-%d %H:%M:%S.%f'), e_anom.strftime('%Y-%m-%d %H:%M:%S.%f')
             ])
-            
-    with open(f"{label_save_dir}/labels-combined.json", "w") as fp:
+    label_dict_filepath = f"{label_save_dir}/labels-combined.json"     
+    with open(label_dict_filepath, "w") as fp:
         json.dump(anomaly_dict, fp, indent=4)
+    return label_dict_filepath

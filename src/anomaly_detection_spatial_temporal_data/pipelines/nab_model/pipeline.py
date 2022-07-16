@@ -7,16 +7,21 @@ from kedro.pipeline import Pipeline, node, pipeline
 from .nodes import set_and_run_model
 
 def create_pipeline(**kwargs) -> Pipeline:
+
+    if kwargs['input_dataset'] == 'iot':
+        label_output = "iot_processed_ts_label"
+    elif kwargs['input_dataset'] == 'financial':
+        label_output = "financial_processed_ts_label"
     return pipeline(
         [
             node(
                 func=set_and_run_model,
-                inputs=[ "params:nab_model_options"],
+                inputs=[label_output ,"params:nab_model_options"], #how to switch input?
                 outputs=None,
                 name="run_nab_model_node",
             ),
 
         ],
-        tags="nab"
+        tags="nab" #add a tag here for choice in kero run
     )
 

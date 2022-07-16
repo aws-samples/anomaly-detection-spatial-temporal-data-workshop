@@ -11,7 +11,7 @@ from typing import Dict, Tuple
 from anomaly_detection_spatial_temporal_data.model.time_series import NABAnomalyDetector
 
 
-def set_and_run_model(parameters: Dict) -> Tuple:
+def set_and_run_model(label_dict_file_path, parameters: Dict) -> Tuple:
     """
     Set the model training configurations and train the model 
     Args:
@@ -24,7 +24,7 @@ def set_and_run_model(parameters: Dict) -> Tuple:
         parameters['model_name'], 
         parameters['model_path'],
         parameters['input_dir'],
-        parameters['label_path'],
+        label_dict_file_path, #hacky way to inject dependency
         parameters['output_dir'],
         
     )

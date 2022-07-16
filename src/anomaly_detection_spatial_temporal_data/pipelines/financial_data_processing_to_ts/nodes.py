@@ -6,6 +6,8 @@ import pandas as pd
 import numpy as np 
 import os
 from typing import Dict, Tuple
+from pathlib import Path
+from collections import defaultdict
 
 from anomaly_detection_spatial_temporal_data.data.data_transform import CSVtoTS
 
@@ -18,6 +20,11 @@ def split_transaction_history_into_time_series(financial_data: pd.DataFrame, par
         Saved edge list, node ids, and transaction labels
     """
     financial_fraud_ts = CSVtoTS(financial_data)
+    data_csv_save_dir = Path(parameters["ts_data_dir"])
+    label_save_dir = Path(parameters["ts_label_dir"])
+    data_csv_save_dir.mkdir(parents=True, exist_ok=True)
+    label_save_dir.mkdir(parents=True, exist_ok=True)
+    
     financial_fraud_ts.split_data_into_separate_ts(
         parameters['ts_count_threshold'], 
         parameters['time_column'], 
@@ -26,4 +33,9 @@ def split_transaction_history_into_time_series(financial_data: pd.DataFrame, par
         parameters['ts_data_dir'],
         parameters['ts_label_dir'],
     )
-    return None
+    anomaly_dict = defaultdict(list)
+    #TODO: add function to form anomaly dict 
+    label_dict_filepath = f"{label_save_dir}/labels-combined.json"     
+    with open(label_dict_filepath, "w") as fp:
+        json.dump(anomaly_dict, fp, indent=4)
+    return label_dict_filepath

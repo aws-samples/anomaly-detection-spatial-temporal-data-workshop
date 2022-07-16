@@ -4,7 +4,7 @@
 # Documentation for this file format can be found in "Parameters"
 # Link: https://kedro.readthedocs.io/en/0.18.0/kedro_project_setup/configuration.html#parameters
 ts_process_options:
-  ts_count_threshold: 10
+  ts_count_threshold: 100
   time_column: 'step'
   value_column: 'amount'
   label_column: 'fraud'

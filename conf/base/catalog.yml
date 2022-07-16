@@ -47,7 +47,7 @@
 financial_data:
   type: pandas.CSVDataSet
   filepath: data/01_raw/financial_fraud/bs140513_032310.csv
-
+## for graph model 
 processed_node_id:
   type: pandas.CSVDataSet
   filepath: data/02_intermediate/financial_fraud/node_id.csv
@@ -83,20 +83,25 @@ model_path:
 inference_result:
   type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
   filepath: data/07_model_output/financial_fraud/inference_result.npz
+  
+## for NAB 
+financial_processed_ts_label:
+  type: text.TextDataSet
+  filepath: data/02_intermediate/financial_fraud/ts_label/labels_json_filepath.txt
 ###########################################################################################################################
 
 # File path for iot dataset 
 iot_data_train_clean:
   type: pandas.CSVDataSet
-  filepath: data/01_raw/BATADAL_dataset03_train_no_anomaly.csv
+  filepath: data/01_raw/iot/BATADAL_dataset03_train_no_anomaly.csv
   
 iot_data_train_anom:
   type: pandas.CSVDataSet
-  filepath: data/01_raw/BATADAL_dataset04_train_some_anomaly.csv
+  filepath: data/01_raw/iot/BATADAL_dataset04_train_some_anomaly.csv
   
 iot_data_test:
   type: pandas.CSVDataSet
-  filepath: data/01_raw/BATADAL_test_dataset_some_anomaly.csv
+  filepath: data/01_raw/iot/BATADAL_test_dataset_some_anomaly.csv
   
 iot_sensor_cols_txt:
   type: text.TextDataSet
@@ -145,6 +150,11 @@ iot_test_inference_scores:
 iot_test_inference_votes:
   type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
   filepath: data/07_model_output/ncad/inference_votes.npz
+  
+## for NAB 
+iot_processed_ts_label:
+  type: text.TextDataSet
+  filepath: data/02_intermediate/iot/ts_label/labels_json_filepath.txt
   
 # iot_ncad_trainer_pickle:
 #   type: pickle.PickleDataSet
