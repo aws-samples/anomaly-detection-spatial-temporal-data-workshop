@@ -6,8 +6,8 @@
 nab_model_options:
   model_name: 'contextOSE'
   model_path: 'src/anomaly_detection_spatial_temporal_data/model/NAB'
-  input_dir: 'data/02_intermediate/iot/ts_data'
-  #"/home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/02_intermediate/financial_fraud/ts_data"
-  output_dir: 'data/07_model_output/iot/ts_result'
-  #"/home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/07_model_output/financial_fraud/ts_result"
+  iot_input_dir: 'data/02_intermediate/iot/ts_data'
+  financial_input_dir: "data/02_intermediate/financial_fraud/ts_data"
+  iot_output_dir: 'data/07_model_output/iot/ts_result'
+  financial_output_dir: "data/07_model_output/financial_fraud/ts_result"
   label_path: 'data/02_intermediate/iot/ts_label/labels-combined.json'

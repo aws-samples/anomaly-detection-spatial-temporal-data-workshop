@@ -20,12 +20,21 @@ def set_and_run_model(label_dict_file_path, parameters: Dict) -> Tuple:
     Returns:
         model training result
     """
+    if 'iot' in label_dict_file_path:
+        input_dir=parameters['iot_input_dir']
+        output_dir=parameters['iot_output_dir']
+    elif 'financial' in label_dict_file_path:
+        input_dir=parameters['financial_input_dir']
+        output_dir=parameters['financial_output_dir']
+    else:
+        raise NotImplementedError
+    
     model_obj = NABAnomalyDetector(
         parameters['model_name'], 
         parameters['model_path'],
-        parameters['input_dir'],
+        input_dir,
         label_dict_file_path, #hacky way to inject dependency
-        parameters['output_dir'],
+        output_dir,
         
     )
     model_obj.predict()

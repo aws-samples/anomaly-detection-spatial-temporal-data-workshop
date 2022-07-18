@@ -12,6 +12,8 @@ def create_pipeline(**kwargs) -> Pipeline:
         label_output = "iot_processed_ts_label"
     elif kwargs['input_dataset'] == 'financial':
         label_output = "financial_processed_ts_label"
+    else:
+        raise NotImplementedError
     return pipeline(
         [
             node(
