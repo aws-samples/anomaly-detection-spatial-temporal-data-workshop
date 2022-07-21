@@ -105,60 +105,57 @@ iot_data_test:
   
 iot_sensor_cols_txt:
   type: text.TextDataSet
-  filepath: data/03_primary/iot_sensor_list_batadal.txt
+  filepath: data/03_primary/iot/iot_sensor_list_batadal.txt
   
 iot_data_gdn_train:
   type: pandas.CSVDataSet
-  filepath: data/03_primary/iot_gdn_train.csv
+  filepath: data/03_primary/iot/gdn/iot_gdn_train.csv
   save_args:
     index: False
 
 iot_data_gdn_train_anom:
   type: pandas.CSVDataSet
-  filepath: data/03_primary/iot_gdn_train_anom.csv
+  filepath: data/03_primary/iot/gdn/iot_gdn_train_anom.csv
   save_args:
     index: False
   
 iot_data_gdn_test:
   type: pandas.CSVDataSet
-  filepath: data/03_primary/iot_gdn_test.csv
+  filepath: data/03_primary/iot/gdn/iot_gdn_test.csv
   save_args:
     index: False
     
 iot_data_ncad_train:
   type: pandas.CSVDataSet
-  filepath: data/03_primary/iot_ncad_train.csv
+  filepath: data/03_primary/iot/ncad/iot_ncad_train.csv
   save_args:
     index: False
     
 iot_data_ncad_train_anom:
   type: pandas.CSVDataSet
-  filepath: data/03_primary/iot_ncad_train_anom.csv
+  filepath: data/03_primary/iot/ncad/iot_ncad_train_anom.csv
   save_args:
     index: False
     
 iot_data_ncad_test:
   type: pandas.CSVDataSet
-  filepath: data/03_primary/iot_ncad_test.csv
+  filepath: data/03_primary/iot/ncad/iot_ncad_test.csv
   save_args:
     index: False
     
 iot_test_inference_scores:
   type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
-  filepath: data/07_model_output/ncad/inference_scores.npz
+  filepath: data/07_model_output/iot/ncad/inference_scores.npz
   
 iot_test_inference_votes:
   type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
-  filepath: data/07_model_output/ncad/inference_votes.npz
+  filepath: data/07_model_output/iot/ncad/inference_votes.npz
   
 ## for NAB 
 iot_processed_ts_label:
   type: text.TextDataSet
   filepath: data/02_intermediate/iot/ts_label/labels_json_filepath.txt
   
-# iot_ncad_trainer_pickle:
-#   type: pickle.PickleDataSet
-#   filepath: data/06_models/trainer.pkl
 ###########################################################################################################################
 # File path for user behavior dataset 
 user_behavior_data:
@@ -166,7 +163,15 @@ user_behavior_data:
   filepath: None           
 ###########################################################################################################################
 # File path for wifi dataset 
-telecom_data_wifi:
+wifi_sensor_cols_txt:
+  type: text.TextDataSet
+  filepath: data/03_primary/wifi/gdn/wifi_sensor_list.txt
+  
+wifi_data_gdn_train:
   type: pandas.CSVDataSet
-  filepath: None
+  filepath: data/03_primary/wifi/gdn/wifi_gdn_train.csv
+  
+wifi_data_gdn_test:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/wifi/gdn/wifi_gdn_test.csv
 ###########################################################################################################################

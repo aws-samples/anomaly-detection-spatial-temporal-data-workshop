@@ -4,9 +4,9 @@
 # Documentation for this file format can be found in "Parameters"
 # Link: https://kedro.readthedocs.io/en/0.18.1/kedro_project_setup/configuration.html#parameters
 
-model_dir: 'data/07_model_output/ncad/'
-log_dir: 'data/07_model_output/ncad/logs/'
-evaluation_result_path: 'data/07_model_output/ncad/evaluation'
+model_dir: 'data/07_model_output/iot/ncad/'
+log_dir: 'data/07_model_output/iot/ncad/logs/'
+evaluation_result_path: 'data/07_model_output/iot/ncad/evaluation'
 
 ## General
 exp_name: 'batadal-ncad'
