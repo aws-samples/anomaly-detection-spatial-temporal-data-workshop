@@ -162,8 +162,40 @@ iot_processed_ts_label:
 ###########################################################################################################################
 # File path for user behavior dataset 
 user_behavior_data:
+  #type: pandas.CSVDataSet
+  type: text.TextDataSet
+  filepath: data/01_raw/user_behavior/input_file_path.txt 
+  #filepath: data/01_raw/user_behavior/RC_2008-05  
+
+## for graph model 
+reddit_processed_user_id:
+  type: pickle.PickleDataSet
+  filepath: data/02_intermediate/user_behavior/u2index.pkl
+
+reddit_processed_topic_id:
+  type: pickle.PickleDataSet
+  filepath: data/02_intermediate/user_behavior/p2index.pkl
+
+reddit_processed_data_split:
+  type: pickle.PickleDataSet
+  filepath: data/02_intermediate/user_behavior/data_tvt.pkl
+
+reddit_processed_edge_list:
   type: pandas.CSVDataSet
-  filepath: None           
+  filepath: data/02_intermediate/user_behavior/edge_list.csv
+  
+reddit_processed_user_feature:
+  type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
+  filepath: data/02_intermediate/user_behavior/user2vec_npy.npz
+
+reddit_processed_topic_feature:
+  type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
+  filepath: data/02_intermediate/user_behavior/prod2vec_npy.npz
+
+reddit_processed_node_label:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/user_behavior/user_label.csv
+
 ###########################################################################################################################
 # File path for wifi dataset 
 telecom_data_wifi:

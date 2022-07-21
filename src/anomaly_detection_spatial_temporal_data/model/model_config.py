@@ -5,22 +5,22 @@ class TaddyConfig(PretrainedConfig):
     def __init__(
         self,
         config,
-        k=5,
-        max_hop_dis_index = 100,
-        max_inti_pos_index = 100,
-        hidden_size=32,
-        num_hidden_layers=1,
-        num_attention_heads=1,
-        intermediate_size=32,
-        hidden_act="gelu",
-        hidden_dropout_prob=0.5,
-        attention_probs_dropout_prob=0.3,
-        initializer_range=0.02,
-        layer_norm_eps=1e-12,
-        is_decoder=False,
-        batch_size = 256,
-        window_size = 1,
-        weight_decay = 5e-4,
+#         k=5,
+#         max_hop_dis_index = 100,
+#         max_inti_pos_index = 100,
+#         hidden_size=32,
+#         num_hidden_layers=1,
+#         num_attention_heads=1,
+#         intermediate_size=32,
+#         hidden_act="gelu",
+#         hidden_dropout_prob=0.5,
+#         attention_probs_dropout_prob=0.3,
+#         initializer_range=0.02,
+#         layer_norm_eps=1e-12,
+#         is_decoder=False,
+#         batch_size = 256,
+#         window_size = 1,
+#         weight_decay = 5e-4,
         **kwargs
     ):
         super(TaddyConfig, self).__init__(**kwargs)
@@ -46,3 +46,48 @@ class TaddyConfig(PretrainedConfig):
         self.print_feq = config['print_feq']
         self.seed = config['seed']
         self.save_directory = config['save_directory']
+        
+class ElandConfig():
+    def __init__(
+        self,
+        config,
+        dim_feats=300, 
+        hidden_size=128, 
+        n_layers=2,
+        epochs=400, 
+        seed=-1, 
+        lr=0.0001, 
+        weight_decay=1e-5, 
+        dropout=0.4, 
+        tensorboard=False,
+        log=True, 
+        name='debug', 
+        gnnlayer_type='gcn',
+        rnn_type='lstm', 
+        pretrain_bm=25, 
+        pretrain_nc=300, 
+        alpha=0.05, 
+        bmloss_type='mse', 
+        device='cpu', 
+        base_pred=400
+        **kwargs
+    ):
+        super(ElandConfig, self).__init__(**kwargs)
+        self.dim_feats = config['dim_feats']
+        self.hidden_size = config['hidden_size']
+        self.n_layers = config['n_layers']
+        self.epochs = config['epochs']
+        self.seed = config['seed']
+        self.lr = config['lr']
+        self.weight_decay = config['weight_decay']
+        self.dropout = config['dropout']
+        self.gnnlayer_type = config['gnnlayer_type']
+        self.rnn_type = config['gnnlayer_type']
+        self.pretrain_bm = config['pretrain_bm']
+        self.pretrain_nc = config['pretrain_nc']
+        self.alpha =  config['pretrain_nc']
+        self.bmloss_type = config['bmloss_type']
+        self.batch_size = config['batch_size']
+        self.base_pred = config['base_pred']
+        self.name = config['name']
+        self.save_directory = config['save_directory']    

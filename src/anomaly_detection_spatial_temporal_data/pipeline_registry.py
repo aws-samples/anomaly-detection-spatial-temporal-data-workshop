@@ -47,7 +47,14 @@ if "ncad" in VENV_INFO:
     
     data_processing_pipeline = idp_ncad.create_pipeline()
     model_pipeline = ncad.create_pipeline()
-
+    
+if "eland" in VENV_INFO:
+    from anomaly_detection_spatial_temporal_data.pipelines import reddit_data_processing as rdp
+    from anomaly_detection_spatial_temporal_data.pipelines import eland
+    
+    data_processing_pipeline = rdp.create_pipeline()
+    model_pipeline = eland.create_pipeline()
+    
 def register_pipelines() -> Dict[str, Pipeline]:
     """Register the project's pipeline.
 
@@ -58,8 +65,8 @@ def register_pipelines() -> Dict[str, Pipeline]:
 
     
     return {
-        "__default__": data_processing_pipeline + model_pipeline,
+        #"__default__": data_processing_pipeline + model_pipeline,
         "data_processing": data_processing_pipeline,
-        "model_pipeline": model_pipeline,
+        #"model_pipeline": model_pipeline,
     }
 

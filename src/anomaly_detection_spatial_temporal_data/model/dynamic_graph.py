@@ -1,4 +1,7 @@
-"""Reference: https://github.com/yuetan031/TADDY_pytorch"""
+# Below code are based on
+# https://github.com/yuetan031/TADDY_pytorch
+# https://github.com/dm2-nd/eland
+
 import time
 import os
 import numpy as np
@@ -13,7 +16,7 @@ from transformers.modeling_bert import BertAttention, BertIntermediate, BertOutp
 from transformers.configuration_utils import PretrainedConfig
 
 from anomaly_detection_spatial_temporal_data.model.components import BaseTransformer #components needed for TADDY
-from anomaly_detection_spatial_temporal_data.model.components import RGCN_Model #components needed for TADDY
+from anomaly_detection_spatial_temporal_data.model.components import RGCN_Model #components needed for ELAND
 
 class Taddy(BertPreTrainedModel):
     """TADDY model is based on transformer"""
@@ -359,7 +362,6 @@ class Eland_e2e(object):
         else:
             self.logger = logging.getLogger()
         # if not torch.cuda.is_available():
-        # 	cuda = -1
         # self.device = torch.device(f'cuda:{cuda}' if cuda >= 0 else 'cpu')
         self.device = device
         # Log parameters for reference

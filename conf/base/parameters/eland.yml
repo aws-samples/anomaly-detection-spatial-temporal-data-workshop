@@ -1,0 +1,34 @@
+# This is a boilerplate parameters config generated for pipeline 'eland'
+# using Kedro 0.18.0.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://kedro.readthedocs.io/en/0.18.0/kedro_project_setup/configuration.html#parameters
+eland_data_load_options:
+  graph_num: 0.1
+  dataset: 'reddit'
+  method: 'gcn'
+  rnn: 'gru'
+  baseline: 'store_true'
+
+eland_model_options:
+  dim_feats: 300
+  cuda: 0
+  hidden_size: 128
+  n_layers: 2,
+  epochs: 400, 
+  seed: -1, 
+  lr: 0.0001, 
+  weight_decay: 0.000001, 
+  dropout: 0.4, 
+  tensorboard: False,
+  log: True, 
+  name: 'debug', 
+  gnnlayer_type: 'gcn',
+  rnn_type: 'lstm', 
+  pretrain_bm: 25, 
+  pretrain_nc: 300,
+  alpha: 0.05, 
+  bmloss_type: 'mse', 
+  device: 'cpu', 
+  base_pred: 400
+  save_directory: "data/07_model_output/user_behavior"
