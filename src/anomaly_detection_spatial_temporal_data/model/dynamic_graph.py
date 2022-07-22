@@ -1,4 +1,4 @@
-# Below code are based on
+# Some codes below are based on
 # https://github.com/yuetan031/TADDY_pytorch
 # https://github.com/dm2-nd/eland
 

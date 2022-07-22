@@ -15,7 +15,7 @@ eland_model_options:
   cuda: 0
   hidden_size: 128
   n_layers: 2
-  epochs: 100
+  epochs: 50
   batch_size: 10
   seed: -1
   lr: 0.0001
