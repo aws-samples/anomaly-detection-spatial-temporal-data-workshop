@@ -1,0 +1,11 @@
+# This is a boilerplate parameters config generated for pipeline 'wifi_gdn_data_processing'
+# using Kedro 0.18.1.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://kedro.readthedocs.io/en/0.18.1/kedro_project_setup/configuration.html#parameters
+
+udp_subpopulation_data_path_clean: 'data/01_raw/wifi/wifi_data/Net1/0/UDP'
+udp_subpopulation_data_path_anom: 'data/01_raw/wifi/wifi_data/Net2/0/UDP'
+
+filename_prefix_sent_rcvd: 'r'
+filename_prefix_sent_sent: 's'

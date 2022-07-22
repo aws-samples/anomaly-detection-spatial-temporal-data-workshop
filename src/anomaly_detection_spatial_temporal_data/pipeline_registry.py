@@ -19,7 +19,6 @@ if "nab" in VENV_INFO:
     from anomaly_detection_spatial_temporal_data.pipelines import iot_nab_data_processing as idp_ts
     from anomaly_detection_spatial_temporal_data.pipelines import nab_model 
     
-
     session = KedroSession('anomaly_detection_spatial_temporal_data')
     context = session.load_context()  
     print('Input dataset for NAB model is:',context.params['input_dataset'])
@@ -35,11 +34,25 @@ if "nab" in VENV_INFO:
     model_pipeline = nab_model.create_pipeline(input_dataset=context.params['input_dataset'])
 
 if "gdn" in VENV_INFO:
+    from anomaly_detection_spatial_temporal_data.pipelines import wifi_gdn_data_processing as wifi_gdn
     from anomaly_detection_spatial_temporal_data.pipelines import iot_gdn_data_processing as idp_gdn
     from anomaly_detection_spatial_temporal_data.pipelines import gdn
     
-    data_processing_pipeline = idp_gdn.create_pipeline()
-    model_pipeline = gdn.create_pipeline()
+    session = KedroSession('anomaly_detection_spatial_temporal_data')
+    context = session.load_context()  
+    print('Input dataset for GDN model is:',context.params['input_dataset'])
+    assert context.params['input_dataset'] in ['iot', 'wifi']
+    
+    # kedro also supports tagging of nodes and pipelines
+    # here we demonstrate how to tag nodes and construct pipelines with a subset of nodes
+    if context.params['input_dataset'] == 'iot':
+        data_processing_pipeline = idp_gdn.create_pipeline() 
+        model_pipeline = gdn.create_pipeline().only_nodes_with_tags("iot_gdn")
+    elif context.params['input_dataset'] == 'wifi':
+        data_processing_pipeline = wifi_gdn.create_pipeline()
+        model_pipeline = gdn.create_pipeline().only_nodes_with_tags("wifi_gdn")
+    else:
+        raise NotImplementedError    
 
 if "ncad" in VENV_INFO:
     from anomaly_detection_spatial_temporal_data.pipelines import iot_ncad_data_processing as idp_ncad

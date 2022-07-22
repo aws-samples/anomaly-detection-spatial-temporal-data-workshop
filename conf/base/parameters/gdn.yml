@@ -5,12 +5,18 @@
 # Link: https://kedro.readthedocs.io/en/0.18.1/kedro_project_setup/configuration.html#parameters
 
 # no clean way to do this
-env_config:
-  checkpoint_save_dir: 'data/07_model_output/'
+env_config_iot:
+  checkpoint_save_dir: 'data/07_model_output/iot/gdn'
   report: 'best'
   device: 'cpu'
   load_model_path: ''
 
+env_config_wifi:
+  checkpoint_save_dir: 'data/07_model_output/wifi/gdn'
+  report: 'best'
+  device: 'cpu'
+  load_model_path: ''
+  
 train_config:
   seed: 5
   batch: 32
