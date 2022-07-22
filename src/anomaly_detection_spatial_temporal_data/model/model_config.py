@@ -5,22 +5,6 @@ class TaddyConfig(PretrainedConfig):
     def __init__(
         self,
         config,
-#         k=5,
-#         max_hop_dis_index = 100,
-#         max_inti_pos_index = 100,
-#         hidden_size=32,
-#         num_hidden_layers=1,
-#         num_attention_heads=1,
-#         intermediate_size=32,
-#         hidden_act="gelu",
-#         hidden_dropout_prob=0.5,
-#         attention_probs_dropout_prob=0.3,
-#         initializer_range=0.02,
-#         layer_norm_eps=1e-12,
-#         is_decoder=False,
-#         batch_size = 256,
-#         window_size = 1,
-#         weight_decay = 5e-4,
         **kwargs
     ):
         super(TaddyConfig, self).__init__(**kwargs)
@@ -50,26 +34,7 @@ class TaddyConfig(PretrainedConfig):
 class ElandConfig():
     def __init__(
         self,
-        config,
-#         dim_feats=300, 
-#         hidden_size=128, 
-#         n_layers=2,
-#         epochs=400, 
-#         seed=-1, 
-#         lr=0.0001, 
-#         weight_decay=1e-5, 
-#         dropout=0.4, 
-#         tensorboard=False,
-#         log=True, 
-#         name='debug', 
-#         gnnlayer_type='gcn',
-#         rnn_type='lstm', 
-#         pretrain_bm=25, 
-#         pretrain_nc=300, 
-#         alpha=0.05, 
-#         bmloss_type='mse', 
-#         device='cpu', 
-#         base_pred=400
+        config
     ):
         self.dim_feats = config['dim_feats']
         self.hidden_size = config['hidden_size']
