@@ -281,7 +281,10 @@ class RGCN_Model(nn.Module):
                 # Update Graph
                 original_adj[indices] += torch.mul(tmp.unsqueeze(1).repeat(1, u_delta.size(1)), u_delta)
                 if max(feats_length) >= feats.size(1):
-                    feats2 = torch.cat((feats, torch.cuda.FloatTensor(feats.size(0), 1, feats.size(2)).fill_(0.).to(self.device)), dim=1)
+                    if 'cuda' in self.device:
+                        feats2 = torch.cat((feats, torch.cuda.FloatTensor(feats.size(0), 1, feats.size(2)).fill_(0.).to(self.device)), dim=1)
+                    else:
+                        feats2 = torch.cat((feats, torch.FloatTensor(feats.size(0), 1, feats.size(2)).fill_(0.).to(self.device)), dim=1)
                 for idx in range(len(feats_length)):
                     feats2[idx][feats_length[idx]] = pred_features.detach()[idx]
                 out, out_len = self.bm_net(feats2, feats_length)
@@ -372,6 +375,58 @@ class GAU_E(nn.Module):
         """
         return (arr - torch.min(arr)) / (torch.max(arr)-torch.min(arr))
 
+class GNN(nn.Module):
+    """
+        GCN and GSage
+    """
+    def __init__(self, dim_feats, dim_h, n_classes, n_layers,
+                activation, dropout, gnnlayer_type='gcn'):
+        super(GNN, self).__init__()
+        heads = [1] * (n_layers + 1)
+        if gnnlayer_type == 'gcn':
+            gnnlayer = GCNLayer
+        elif gnnlayer_type == 'gsage':
+            gnnlayer = SAGELayer
+        elif gnnlayer_type == 'hetgcn':
+            gnnlayer = HetLayer
+        self.gnnlayer_type = gnnlayer_type
+        self.layers = nn.ModuleList()
+        # input layer
+        self.layers.append(gnnlayer(dim_feats, dim_h, heads[0], activation, 0))
+        # hidden layers
+        for i in range(n_layers - 1):
+            self.layers.append(gnnlayer(dim_h * heads[i], dim_h, heads[i+1], activation, dropout))
+        # output layer
+        self.layers.append(gnnlayer(dim_h * heads[-2], n_classes, heads[-1], None, dropout))
+
+    def forward(self, adj, features_u, features_v):
+        h_u, h_v = features_u, features_v
+        if self.gnnlayer_type == 'gcn':
+            d_u, d_v = self.get_normed_d(adj)
+            for i, layer in enumerate(self.layers):
+                h_u, h_v = layer(adj, h_u, h_v, d_u, d_v)
+                if i == len(self.layers) - 2:
+                    emb = h_u
+        if self.gnnlayer_type == 'gsage' or self.gnnlayer_type == 'hetgcn':
+            for i, layer in enumerate(self.layers):
+                h_u, h_v = layer(adj, h_u, h_v)
+                if i == len(self.layers) - 2:
+                    emb = h_u
+        # We only need user predictions in the end
+        # return h_u
+        return F.log_softmax(h_u, dim=1), emb
+
+    @staticmethod
+    def get_normed_d(A):
+        """ Get normalized degree matrix of A"""
+        d_u = A.sum(1) + 1
+        # Self Loop
+        d_v = A.sum(0) + 1
+
+        d_u = torch.pow(d_u, -0.5)
+        d_v = torch.pow(d_v, -0.5)
+
+        return d_u, d_v    
 
 class GCNLayer(nn.Module):
     """ one layer of GCN """

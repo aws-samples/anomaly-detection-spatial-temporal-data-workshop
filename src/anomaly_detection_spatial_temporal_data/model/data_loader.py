@@ -1,13 +1,14 @@
 """Reference: https://github.com/yuetan031/TADDY_pytorch"""
 import numpy as np
 import scipy.sparse as sp
+from scipy.sparse import csr_matrix, coo_matrix
 from numpy.linalg import inv
 import pickle
 import os
 from tqdm import tqdm
 from glob import glob
 import gc
-from collections import defaultdict
+from collections import defaultdict, Counter
 import datetime
 
 import torch
@@ -17,12 +18,12 @@ class StaticDatasetLoader():
     def __init__(self, dataset_name, args):
         pass
 
-class GraphWNodeFeaturesDataSet(Dataset):
-    """" Dataset Container """
-    def __init__(self, p2index, item_features, edgelist_file, max_len=30, thresh=0.004):
+class DynamicGraphWNFDataSet(Dataset):
+    """" Sequential Dataset """
+    def __init__(self, p2index, item_features, edgelist_df, max_len=30, thresh=0.004):
         self.p2idx = p2index
         self.idx2feats = item_features
-        self.graph_path = edgelist_file 
+        self.edgelist_df = edgelist_df 
         self.tmax, self.tmin = None, None
         self.thresh = thresh
         self.init_data()
@@ -91,16 +92,20 @@ class GraphWNodeFeaturesDataSet(Dataset):
         """initialize dataset from edge list"""
         self.u2pt = defaultdict(list)
         self.total_edges = 0
-        file = open(self.graph_path)
-        for line in tqdm(file):
+        for i, row in self.edgelist_df.iterrows():
             self.total_edges += 1
-            tmp = line.split(',')
-            uid, pid, t = tmp[0], tmp[1], int(tmp[2])
-            self.u2pt[uid].append([pid, t])
-        file.close()
+            uid, pid, t = row[0], row[1], int(row[2])
+            self.u2pt[uid].append([pid, t])    
+#         file = open(self.graph_path)
+#         for line in tqdm(file):
+#             self.total_edges += 1
+#             tmp = line.split(',')
+#             uid, pid, t = tmp[0], tmp[1], int(tmp[2])
+#             self.u2pt[uid].append([pid, t])
+#         file.close()
         remove_ulist=[]
         for u in self.u2pt.keys():
-            if len(self.u2pt[u]) < 2:
+            if len(self.u2pt[u]) < 2: #remove edges with less than 2 interactions
                 remove_ulist.append(u)
                 self.total_edges -= 1
         for u in remove_ulist:
@@ -116,55 +121,55 @@ class GraphWNodeFeaturesDataSet(Dataset):
         return ret
     
 class DynamicGraphWNodeFeatDatasetLoader():
-    def __init__(self, ):
-        
-        
-    def load_data(ds, graph_num):
-        """ Initialize u2index, labels, train/validation/test indices """
+    def __init__(self, labels, u2index, p2index, edge_list, tvt_nids, user_features, item_features):
+        self.u2index = u2index
+        self.p2index = p2index
+        self.edge_list = edge_list #as Pandas DataFrame
+        self.tvt_idx = tvt_nids
+        self.user_features = user_features
+        self.item_features  = item_features
+        self.labels = self.process_label(labels)
+        self.graph = self.process_edgelist()
+        self.print_data_split_info()
+    
+    def process_label(self, labels_df):
+        """process label information"""
         u_all = set()
         pos_uids = set()
         labeled_uids = set()
-        with open(f'../data/{ds}/userlabels', 'r') as f:
-            for line in f:
-                arr = line.strip('\r\n').split(',')
-                u_all.add(arr[0])
-                if arr[1] == 'anomaly':
-                    pos_uids.add(arr[0])
-                    labeled_uids.add(arr[0])
-                elif arr[1] == 'benign':
-                    labeled_uids.add(arr[0])
+        labels = np.zeros(len(self.u2index))
+        #convert a dataframe to an numpy array, array index being mapped indexes from u2index
+        for i,row in labels_df.iterrows():
+            author = row['author']
+            author_label = row['label']
+            u_all.add(author)
+            if author_label == 1:
+                pos_uids.add(author)
+                labeled_uids.add(author)
+            elif author_label == 0:
+                labeled_uids.add(author)
         print(f'loaded labels, total of {len(pos_uids)} positive users and {len(labeled_uids)} labeled users')
-
-        # get users' features
-        u2index = pk.load(open(f'../data/{ds}/u2index.pkl', 'rb'))
-        user_feats = np.load(open(f'../data/{ds}/user2vec.npy', 'rb'), allow_pickle=True)
-        # Get prod features
-        p2index = pk.load(open(f'../data/{ds}/p2index.pkl', 'rb'))
-        item_feats = np.load(open(f'../data/{ds}/prod2vec.npy', 'rb'), allow_pickle=True)
-
-        labels = np.zeros(len(u2index))
-        for u in u2index:
+        
+        for u in self.u2index:
             if u in pos_uids:
-                labels[u2index[u]] = 1
+                labels[self.u2index[u]] = 1
         labels = labels.astype(int)
-
-        tvt_idx = pk.load(open(f'../data/{ds}/tvt_idx.pkl', 'rb'))
-        idx_train, idx_val, idx_test = tvt_idx
-        print('Train: total of {:5} users with {:5} pos users and {:5} neg users'.format(len(idx_train), np.sum(labels[idx_train]), len(idx_train)-np.sum(labels[idx_train])))
-        print('Val:   total of {:5} users with {:5} pos users and {:5} neg users'.format(len(idx_val), np.sum(labels[idx_val]), len(idx_val)-np.sum(labels[idx_val])))
-        print('Test:  total of {:5} users with {:5} pos users and {:5} neg users'.format(len(idx_test), np.sum(labels[idx_test]), len(idx_test)-np.sum(labels[idx_test])))
-
-        """ Get graph, graph features, and initialize u2index, p2index """
+        return labels
+    
+    def process_edgelist(self):
+        """ Load edge list and construct a graph """
         edges = Counter()
-        n = int(graph_num * 10)
-        edgelist_file = f'../data/{ds}/splitted_edgelist_{n}' if n < 10 else f'../data/{ds}/edgelist'
-        with open(edgelist_file, 'r') as f:
-            for line in f:
-                arr = line.strip('\r\n').split(',')
-                u = arr[0]
-                p = arr[1]
-                t = int(arr[2])
-                edges[(u2index[u], p2index[p])] += 1
+        #n = int(graph_num * 10)
+        #edgelist_file = f'../data/{ds}/splitted_edgelist_{n}' if n < 10 else f'../data/{ds}/edgelist'
+
+        for i, row in self.edge_list.iterrows():
+            u = row[0]
+            p = row[1]
+            t = row[2]            
+            #u = row['author']
+            #p = row['subreddit']
+            #t = row['retrieved_on']
+            edges[(self.u2index[u], self.p2index[p])] += 1
         # Construct the graph
         row = []
         col = []
@@ -173,9 +178,30 @@ class DynamicGraphWNodeFeatDatasetLoader():
             i, j = edge
             row.append(i)
             col.append(j)
-            entry.append(w)
-        graph = csr_matrix((entry, (row, col)), shape=(len(u2index), len(p2index)))
-        return u2index, labels, tvt_idx, user_feats, p2index, item_feats, graph
+            entry.append(w) #save weights (i.e. times of interaction)
+        graph = csr_matrix(
+            (entry, (row, col)), 
+            shape=(len(self.u2index), len(self.p2index))
+        )   
+        return graph
+    
+    def print_data_split_info(self):
+        idx_train, idx_val, idx_test = self.tvt_idx
+        print('Train: total of {:5} users with {:5} pos users and {:5} neg users'.format(
+            len(idx_train), 
+            np.sum(self.labels[idx_train]), 
+            len(idx_train)-np.sum(self.labels[idx_train]))
+             )
+        print('Val:   total of {:5} users with {:5} pos users and {:5} neg users'.format(
+            len(idx_val), 
+            np.sum(self.labels[idx_val]), 
+            len(idx_val)-np.sum(self.labels[idx_val]))
+             )
+        print('Test:  total of {:5} users with {:5} pos users and {:5} neg users'.format(
+            len(idx_test), 
+            np.sum(self.labels[idx_test]), 
+            len(idx_test)-np.sum(self.labels[idx_test]))
+             )
 
 class DynamicDatasetLoader():
 

@@ -7,6 +7,9 @@ Examples
 >>> model = NABAnomalyDetector()
 >>> model.predict('input_dir', 'output_dir')
 """
+# Below code are based on
+# https://github.com/numenta/NAB
+
 import json
 import os
 import pickle

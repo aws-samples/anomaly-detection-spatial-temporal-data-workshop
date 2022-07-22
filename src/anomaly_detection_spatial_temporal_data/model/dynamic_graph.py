@@ -4,19 +4,25 @@
 
 import time
 import os
+import logging
 import numpy as np
+import scipy.sparse as sp
 from sklearn import metrics
+from sklearn.metrics import precision_recall_curve, roc_curve, auc, average_precision_score, roc_auc_score, f1_score
 
 import torch
 import torch.nn as nn
+from torch.nn import MSELoss, CosineEmbeddingLoss
 import torch.nn.functional as F
 import torch.optim as optim
 import networkx as nx
 from transformers.modeling_bert import BertAttention, BertIntermediate, BertOutput, BertPreTrainedModel, BertPooler
 from transformers.configuration_utils import PretrainedConfig
 
+#should we decouple the two models?
 from anomaly_detection_spatial_temporal_data.model.components import BaseTransformer #components needed for TADDY
 from anomaly_detection_spatial_temporal_data.model.components import RGCN_Model #components needed for ELAND
+from anomaly_detection_spatial_temporal_data.utils import MultipleOptimizer
 
 class Taddy(BertPreTrainedModel):
     """TADDY model is based on transformer"""
@@ -343,43 +349,50 @@ class Taddy(BertPreTrainedModel):
 class Eland_e2e(object):
     """Eland model class based on RGCN"""
     def __init__(self, adj_matrix, lstm_dataloader, user_features, item_features,
-            labels, tvt_nids, u2index, p2index, idx2feats, dim_feats=300, cuda=0, hidden_size=128, n_layers=2,
-            epochs=400, seed=-1, lr=0.0001, weight_decay=1e-5, dropout=0.4, tensorboard=False,
-            log=True, name='debug', gnnlayer_type='gcn', rnn_type='lstm', pretrain_bm=25, pretrain_nc=300, alpha=0.05, bmloss_type='mse', device='cuda', base_pred=400):
-        self.lr = lr
-        self.weight_decay = weight_decay
-        self.n_epochs = epochs
-        self.pretrain_bm = pretrain_bm
-        self.pretrain_nc = pretrain_nc
+            labels, tvt_nids, u2index, p2index, idx2feats, model_config):
+        self.lr = model_config.lr
+        self.weight_decay = model_config.weight_decay
+        self.n_epochs = model_config.epochs
+        self.pretrain_bm = model_config.pretrain_bm
+        self.pretrain_nc = model_config.pretrain_nc
         self.n_classes = len(np.unique(labels))
-        self.alpha = alpha
+        self.alpha = model_config.alpha
         self.labels = labels
         self.train_nid, self.val_nid, self.test_nid = tvt_nids
-        self.bmloss_type = bmloss_type
-        self.base_pred = base_pred
-        if log:
-            self.logger = self.get_logger(name)
+        self.bmloss_type = model_config.bmloss_type
+        self.base_pred = model_config.base_pred
+        self.gnnlayer_type = model_config.gnnlayer_type
+        self.dim_feats = model_config.dim_feats
+        self.hidden_size = model_config.hidden_size
+        self.n_layers = model_config.n_layers
+        self.dropout = model_config.dropout
+        self.rnn_type = model_config.rnn_type
+        if model_config.log:
+            self.logger = self.get_logger(model_config.name)
         else:
             self.logger = logging.getLogger()
         # if not torch.cuda.is_available():
         # self.device = torch.device(f'cuda:{cuda}' if cuda >= 0 else 'cpu')
-        self.device = device
+        self.device = model_config.device
         # Log parameters for reference
         all_vars = locals()
         self.log_parameters(all_vars)
         # Fix random seed if needed
-        if seed > 0:
+        if model_config.seed > 0:
             np.random.seed(seed)
             torch.manual_seed(seed)
             torch.cuda.manual_seed_all(seed)
         # load data
-        self.load_data(adj_matrix, user_features, item_features, self.labels, tvt_nids, gnnlayer_type, idx2feats)
-        idx2feats = torch.cuda.FloatTensor(idx2feats)
+        self.load_data(adj_matrix, user_features, item_features, self.labels, tvt_nids, self.gnnlayer_type, idx2feats)
+        if 'cuda' in self.device:
+            idx2feats = torch.cuda.FloatTensor(idx2feats)
+        else:
+            idx2feats = torch.FloatTensor(idx2feats)
         # idx2feats = idx2feats.to(self.device)
-        self.model = RGCN_Model(dim_feats, hidden_size, lstm_dataloader, self.n_classes, n_layers,
-                            u2idx = u2index, p2idx = p2index, idx2feats = idx2feats, dropout=dropout,
-                            device=self.device, rnn_type=rnn_type , gnnlayer_type=gnnlayer_type,
-                            activation=F.relu, bmloss_type=bmloss_type, base_pred=self.base_pred)
+        self.model = RGCN_Model(self.dim_feats, self.hidden_size, lstm_dataloader, self.n_classes, self.n_layers,
+                            u2idx = u2index, p2idx = p2index, idx2feats = idx2feats, dropout=self.dropout,
+                            device=self.device, rnn_type=self.rnn_type , gnnlayer_type=self.gnnlayer_type,
+                            activation=F.relu, bmloss_type=self.bmloss_type, base_pred=self.base_pred)
 
     def scipysp_to_pytorchsp(self, sp_mx):
         """ converts scipy sparse matrix to pytorch sparse matrix """
@@ -525,8 +538,10 @@ class Eland_e2e(object):
         if self.pretrain_nc > 0:
             self.pretrain_nc_net(self.pretrain_nc)
         # optimizers
-        optims = MultipleOptimizer(torch.optim.Adam(self.model.bm_net.parameters(), lr=self.lr),
-                                torch.optim.Adam(self.model.nc_net.parameters(), lr=self.lr, weight_decay=self.weight_decay))
+        optims = MultipleOptimizer(
+            torch.optim.Adam(self.model.bm_net.parameters(), lr=self.lr),
+            torch.optim.Adam(self.model.nc_net.parameters(), lr=self.lr, weight_decay=self.weight_decay)
+        )
 
         criterion = F.nll_loss
         best_test_auc = 0.

@@ -51,28 +51,26 @@ class ElandConfig():
     def __init__(
         self,
         config,
-        dim_feats=300, 
-        hidden_size=128, 
-        n_layers=2,
-        epochs=400, 
-        seed=-1, 
-        lr=0.0001, 
-        weight_decay=1e-5, 
-        dropout=0.4, 
-        tensorboard=False,
-        log=True, 
-        name='debug', 
-        gnnlayer_type='gcn',
-        rnn_type='lstm', 
-        pretrain_bm=25, 
-        pretrain_nc=300, 
-        alpha=0.05, 
-        bmloss_type='mse', 
-        device='cpu', 
-        base_pred=400
-        **kwargs
+#         dim_feats=300, 
+#         hidden_size=128, 
+#         n_layers=2,
+#         epochs=400, 
+#         seed=-1, 
+#         lr=0.0001, 
+#         weight_decay=1e-5, 
+#         dropout=0.4, 
+#         tensorboard=False,
+#         log=True, 
+#         name='debug', 
+#         gnnlayer_type='gcn',
+#         rnn_type='lstm', 
+#         pretrain_bm=25, 
+#         pretrain_nc=300, 
+#         alpha=0.05, 
+#         bmloss_type='mse', 
+#         device='cpu', 
+#         base_pred=400
     ):
-        super(ElandConfig, self).__init__(**kwargs)
         self.dim_feats = config['dim_feats']
         self.hidden_size = config['hidden_size']
         self.n_layers = config['n_layers']
@@ -82,12 +80,14 @@ class ElandConfig():
         self.weight_decay = config['weight_decay']
         self.dropout = config['dropout']
         self.gnnlayer_type = config['gnnlayer_type']
-        self.rnn_type = config['gnnlayer_type']
+        self.rnn_type = config['rnn_type']
         self.pretrain_bm = config['pretrain_bm']
         self.pretrain_nc = config['pretrain_nc']
-        self.alpha =  config['pretrain_nc']
+        self.alpha =  config['alpha']
         self.bmloss_type = config['bmloss_type']
         self.batch_size = config['batch_size']
         self.base_pred = config['base_pred']
         self.name = config['name']
+        self.device = config['device']
+        self.log = config['log']
         self.save_directory = config['save_directory']    

@@ -196,6 +196,18 @@ reddit_processed_node_label:
   type: pandas.CSVDataSet
   filepath: data/02_intermediate/user_behavior/user_label.csv
 
+reddit_data_dict:
+  type: pickle.PickleDataSet
+  filepath: data/05_model_input/user_behavior/data_dict.pkl
+
+reddit_train_result:
+  type: pickle.PickleDataSet
+  filepath: data/07_model_output/user_behavior/train_result.pkl
+
+reddit_model_path:
+  type: text.TextDataSet
+  filepath: data/07_model_output/user_behavior/model_path.txt
+
 ###########################################################################################################################
 # File path for wifi dataset 
 telecom_data_wifi:

@@ -53,3 +53,23 @@ def open_model(name, directory):
     with open(os.path.join(directory, name), "rb") as f:
         model = joblib.load(f)
     return model
+
+class MultipleOptimizer():
+    """ a class that wraps multiple optimizers """
+    def __init__(self, *op):
+        self.optimizers = op
+
+    def zero_grad(self):
+        for op in self.optimizers:
+            op.zero_grad()
+
+    def step(self):
+        for op in self.optimizers:
+            op.step()
+
+    def update_lr(self, op_index, new_lr):
+        """ update the learning rate of one optimizer
+        Parameters: op_index: the index of the optimizer to update
+                    new_lr:   new learning rate for that optimizer """
+        for param_group in self.optimizers[op_index].param_groups:
+            param_group['lr'] = new_lr

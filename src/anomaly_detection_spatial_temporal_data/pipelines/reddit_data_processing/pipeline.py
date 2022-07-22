@@ -12,7 +12,6 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=preprocess_comment_history,
                 inputs="user_behavior_data",
-                #user_label, u2index, p2index, edgelist_df, data_tvt, user2vec_npy, prod2vec_npy
                 outputs=[
                     "reddit_processed_node_label", 
                     "reddit_processed_user_id", 
