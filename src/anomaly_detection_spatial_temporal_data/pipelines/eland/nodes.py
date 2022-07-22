@@ -76,7 +76,7 @@ def set_and_train_model(data_dict: Dict, parameters: Dict) -> Tuple:
     auc, ap = model_obj.train()
     training_result = {"auc": auc, "ap":ap}
     save_model_path = ''
-    return learned_result,save_model_path
+    return training_result,save_model_path
 
 
 # def run(ds, graph_num=0.1, name='debug', baseline=False, gnnlayer_type='gcn', rnnlayer_type='lstm', device='cpu'):
