@@ -30,11 +30,5 @@ def create_pipeline(**kwargs) -> Pipeline:
                 outputs=["reddit_train_result",'reddit_model_path'],
                 name="set_and_train_model_node",
             ),
-#             node(
-#                 func=predict,
-#                 inputs=["model_path", "params:infer_options"],
-#                 outputs="inference_result",
-#                 name="model_inference_node",
-#             ),
         ]
     )

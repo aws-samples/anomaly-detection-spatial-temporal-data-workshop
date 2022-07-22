@@ -14,8 +14,6 @@ from anomaly_detection_spatial_temporal_data.model.data_loader import DynamicGra
 from anomaly_detection_spatial_temporal_data.model.dynamic_graph import Eland_e2e
 from anomaly_detection_spatial_temporal_data.model.model_config import ElandConfig
 
- 
-
 def load_data(labels, u2index, p2index, edge_list, tvt_nids, user_features, item_features, parameters: Dict) -> Dict:
     """
     Load the processed data for the model 
@@ -38,7 +36,7 @@ def load_data(labels, u2index, p2index, edge_list, tvt_nids, user_features, item
     
     #sequential data loader
     dataset = DynamicGraphWNFDataSet(p2index, item_features, edge_list)
-    lstm_dataloader = DataLoader(dataset, batch_size=300)
+    lstm_dataloader = DataLoader(dataset, batch_size=parameters['batch_size'])
     
     return {
         'graph': data_loader.graph, 
@@ -73,53 +71,6 @@ def set_and_train_model(data_dict: Dict, parameters: Dict) -> Tuple:
         data_dict['item_features'], 
         model_config
     )
-    auc, ap = model_obj.train()
-    training_result = {"auc": auc, "ap":ap}
-    save_model_path = ''
+    training_result, save_model_path = model_obj.train()
+
     return training_result,save_model_path
-
-
-# def run(ds, graph_num=0.1, name='debug', baseline=False, gnnlayer_type='gcn', rnnlayer_type='lstm', device='cpu'):
-#     """main function to kick off model training"""
-
-#     eland = Eland_e2e(
-#         graph, 
-#         lstm_dataloader, 
-#         user_features,
-#         item_features, 
-#         labels, 
-#         tvt_nids, 
-#         u2index,
-#         p2index, 
-#         item_features, 
-#         lr=0.01, 
-#         n_layers=2, 
-#         name=name, 
-#         pretrain_bm=25,
-#         pretrain_nc=300, 
-#         gnnlayer_type=gnnlayer_type, 
-#         rnn_type=rnnlayer_type, 
-#         bmloss_type='mse', 
-#         device=device, 
-#         base_pred=base_pred)
-#     if not baseline:
-#         auc, ap = eland.train()
-#     else:
-#         auc, ap = eland.pretrain_nc_net(n_epochs=300)
-#     return auc, ap
-
-# def predict(model_path: str, parameters: Dict) -> np.ndarray:
-#     """
-#     Run inference on specific snapshot number 
-#     Args:
-#         model_path: saved model path 
-#         parameters: parameters for running the inference 
-#     Returns: 
-#         model inference result as numpy arrays
-#     """
-#     logger = logging.getLogger(__name__)
-#     logger.info(f"Loading model {model_path}")
-#     model_obj = torch.load(model_path)
-#     pred = model_obj.predict(parameters['snap_num'])
-    
-#     return pred

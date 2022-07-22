@@ -4,11 +4,10 @@
 # Documentation for this file format can be found in "Parameters"
 # Link: https://kedro.readthedocs.io/en/0.18.0/kedro_project_setup/configuration.html#parameters
 eland_data_load_options:
-  graph_num: 0.1
   dataset: 'reddit'
-  method: 'gcn'
-  rnn: 'gru'
   baseline: 'store_true'
+  batch_size: 300
+  #graph_num: 3
 
 eland_model_options:
   dim_feats: 300
@@ -16,7 +15,7 @@ eland_model_options:
   hidden_size: 128
   n_layers: 2
   epochs: 50
-  batch_size: 10
+  batch_size: 300
   seed: -1
   lr: 0.0001
   log: True

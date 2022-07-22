@@ -367,6 +367,7 @@ class Eland_e2e(object):
         self.n_layers = model_config.n_layers
         self.dropout = model_config.dropout
         self.rnn_type = model_config.rnn_type
+        self.save_directory = model_config.save_directory
         if model_config.log:
             self.logger = self.get_logger(model_config.name)
         else:
@@ -375,8 +376,8 @@ class Eland_e2e(object):
         # self.device = torch.device(f'cuda:{cuda}' if cuda >= 0 else 'cpu')
         self.device = model_config.device
         # Log parameters for reference
-        all_vars = locals()
-        self.log_parameters(all_vars)
+        #all_vars = locals()
+        self.log_parameters(model_config)
         # Fix random seed if needed
         if model_config.seed > 0:
             np.random.seed(seed)
@@ -393,6 +394,7 @@ class Eland_e2e(object):
                             u2idx = u2index, p2idx = p2index, idx2feats = idx2feats, dropout=self.dropout,
                             device=self.device, rnn_type=self.rnn_type , gnnlayer_type=self.gnnlayer_type,
                             activation=F.relu, bmloss_type=self.bmloss_type, base_pred=self.base_pred)
+        self.training_record_dict = {}
 
     def scipysp_to_pytorchsp(self, sp_mx):
         """ converts scipy sparse matrix to pytorch sparse matrix """
@@ -574,9 +576,12 @@ class Eland_e2e(object):
             training_res = self.eval_node_cls(nc_logits[self.train_nid].detach(), self.labels[self.train_nid], self.n_classes)
             # res = self.eval_node_cls(nc_logits_eval_original[self.val_nid], self.labels[self.val_nid], self.n_classes)
             res_modified = self.eval_node_cls(nc_logits_eval_modified[self.val_nid], self.labels[self.val_nid], self.n_classes)
+            self.training_record_dict[epoch + 1]= {"train_auc": training_res['auc'] , "val_auc": res_modified['auc']}
             if res_modified['auc'] > best_val_auc:
                 cnt_wait = 0
                 best_val_auc = res_modified['auc']
+                self.save_model_path = os.path.join(self.save_directory,f'eland_model_{epoch}.pth')
+                torch.save(self.model,self.save_model_path)
                 # res_test = self.eval_node_cls(nc_logits_eval_original[self.test_nid], self.labels[self.test_nid], self.n_classes)
                 res_test_modified = self.eval_node_cls(nc_logits_eval_modified[self.test_nid], self.labels[self.test_nid], self.n_classes)
                 if res_test_modified['auc'] > best_test_auc:
@@ -594,20 +599,22 @@ class Eland_e2e(object):
                 break
         self.logger.info('Best Test Results: auc {:.4f}, ap {:.4f}, f1 {:.4f}'.format(best_res['auc'], best_res['ap'], best_res['f1']))
 
-        return best_res['auc'], best_res['ap']
+        return self.training_record_dict, self.save_model_path
 
-    def log_parameters(self, all_vars):
-        del all_vars['self']
-        del all_vars['adj_matrix']
-        del all_vars['user_features']
-        del all_vars['item_features']
-        del all_vars['labels']
-        del all_vars['tvt_nids']
-        del all_vars['lstm_dataloader']
-        del all_vars['u2index']
-        del all_vars['p2index']
-        del all_vars['idx2feats']
-        self.logger.info(f'Parameters: {all_vars}')
+    def log_parameters(self, model_config):
+        """log model training params"""
+        parameters = {
+            'dim_feats': model_config.dim_feats,
+            'hidden_size': model_config.hidden_size,
+            'n_layers': model_config.n_layers,
+            'lr': model_config.lr,
+            'weight_decay': model_config.weight_decay,
+            'dropout': model_config.dropout,
+            'gnnlayer_type': model_config.gnnlayer_type,
+            'rnn_type': model_config.rnn_type,
+            'bmloss_type': model_config.bmloss_type,
+        }
+        self.logger.info(f'Parameters: {parameters}')
 
     @staticmethod
     def transform_mat(matrix):
