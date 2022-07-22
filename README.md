@@ -35,7 +35,15 @@ Note that kedro pipeline has to be initiated from the repo root directory. So ru
 cd ..
 kedro run 
 ```
+## Downloading the dataset
+#### For financial fraud use case 
 
+#### For IoT network anomaly use case 
+
+#### For Wifi network anomaly use case
+
+#### For Reddit user behavior use case
+For more details, please refer to `notebooks/download_data.ipynb`
 
 ## Outline of the Tutorial
 
