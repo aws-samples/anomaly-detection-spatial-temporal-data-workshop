@@ -44,7 +44,7 @@ Dataset can be download from [here](https://www.kaggle.com/datasets/ealaxi/banks
 #### For Wifi network anomaly use case
 
 #### For Reddit user behavior use case
-For more details, please refer to `notebooks/download_data.ipynb`
+For more details, please refer to [notebooks/download_data.ipynb](notebooks/download_data.ipynb)
 
 ## Outline of the Tutorial
 
