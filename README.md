@@ -37,6 +37,7 @@ kedro run
 ```
 ## Downloading the dataset
 #### For financial fraud use case 
+Dataset can be download from [here](https://www.kaggle.com/datasets/ealaxi/banksim1), please download the two csv files (bs140513_032310.csv and bsNET140513_032310.csv) and put them under : *anomaly-detection-spatial-temporal-data/data/01_raw/financial_fraud*
 
 #### For IoT network anomaly use case 
 
