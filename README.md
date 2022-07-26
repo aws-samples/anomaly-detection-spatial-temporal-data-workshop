@@ -12,6 +12,7 @@ If you want to visualize the Kedro pipeline, please follow the instruction [here
 ## Setting up the environment
 
 We declared dependencies for different pipelines for different use cases and prepared shell script to install the virtual environment. Once the virtual environment is installed, you can run the notebook using the customized env/kernel. Also, user can run the corresponding pipeline after activating the virtual env. 
+
 For example, to run the financial fraud detection pipeline using the TADDY(dynamic graph based) modeling framework, follow these steps below: 
 1. Prepare the Kedro Taddy virtual environment 
 Run the following command from the repo root directory:
@@ -35,13 +36,17 @@ Note that kedro pipeline has to be initiated from the repo root directory. So ru
 cd ..
 kedro run 
 ```
+
+4. Repeat the above with `prepare_eland_environment.sh`, `prepare_gdn_environment.sh`, `prepare_nab_environment.sh`, `prepare_ncad_environment.sh`, `prepare_el_environment.sh` to setup all of the required environments.
+
 ## Downloading the dataset
 We advise to download the datasets before coming to the live session, to have a copy on your local laptop. 
 
 #### For financial fraud use case 
-Dataset can be download from [here](https://www.kaggle.com/datasets/ealaxi/banksim1), please download the two csv files (bs140513_032310.csv and bsNET140513_032310.csv) and put them under : *anomaly-detection-spatial-temporal-data/data/01_raw/financial_fraud*
+Dataset can be download from [here](https://www.kaggle.com/datasets/ealaxi/banksim1), please download the two csv files (bs140513_032310.csv and bsNET140513_032310.csv) and put them under : `data/01_raw/financial_fraud`
 
 #### For IoT network anomaly use case 
+The IoT dataset is source from the [BATADAL website](http://www.batadal.net/data.html) and is placed under `data/01_raw/iot`. This is done by the notebooks [notebooks/download_data.ipynb](notebooks/download_data.ipynb) and [notebooks/industrial_iot/1.0-nk-batadal-exploration.ipynb](notebooks/industrial_iot/1.0-nk-batadal-exploration.ipynb). Please be sure to run one of these notebooks to obtain the dataset.
 
 #### For Wifi network anomaly use case
 
@@ -85,8 +90,15 @@ V. Hands-on [2 hours]
 VI. Conclusion and Take-away [5 mins]
 
 ### Instructions on running Kedro pipeline 
+First activate the virtual environment for the specific use case:
+
+```
+source src/<name_of_use_case>/bin/activate
+```
+
 You can run the entire pipeline for one use case with the corresponding activated virtual environment:
 ```
+# make sure you are in the root directory
 kedro run
 ```
 You can also run your specific Kedro pipeline(sub-pipeline) with:
@@ -112,7 +124,10 @@ kedro run -h
 You can run NAB and TADDY modeling framework for the financial fraud use case. For NAB, time series of amount spent for each unique (customer, category) pair is constructed. For TADDY, a dynamic interaction graph between customer and merchant is built. Each edge represents a transaction record between the customer and merchant.
 
 #### For IoT network anomaly use case 
-You can run NAB, NCAD and GDN modeling framework for the IoT network anomaly use case. 
+You can run NAB, NCAD and GDN modeling framework for the IoT network anomaly use case. To do this, follow the below steps, replace `<model>` with one of `nab`, `ncad`, `gdn`
+1. Set input dataset to `iot` in `conf/base/parameters.yml`
+2. Activate the NAB repository: `source src/kedro-<model>-venv/bin/activate`
+3. Run the pipeline: `kedro run`
 
 #### For Wifi network anomaly use case
 You can run NAB and GDN modeling framework for the Wifi network anomaly use case. 
@@ -129,10 +144,11 @@ You can select the custom kernel after installing the corresponding virtual envi
 Under *notebooks/financial_fraud*, choose `kedro-taddy-venv` for notebook 1.0, 1.1, 2.1, 3.1. Choose `kedro-nab-venv` for notebook 1.2, 2.2. 
 
 #### For IoT network anomaly use case 
+Under *notebooks/industrial_iot*, choose `kedro-gdn-venv` for notebook `*gdn`. Choose `kedro-nab-venv` for notebook `*nab`, and `kedro-ncad-venv`for notebooks `*ncad`. If the environment was set up correctly, the notebook will automatically choose the correct environment.
 
 
 #### For Wifi network anomaly use case
-
+Under *notebooks/telecom_network*, choose `kedro-gdn-venv` for notebook `*gdn`. If the environment was set up correctly, the notebook will automatically choose the correct environment.
 
 #### For Reddit user behavior use case
 
