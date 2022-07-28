@@ -1,3 +1,6 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 """Anomaly Detection For Spatial Temporal Data file for ensuring the package is executable
 as `anomaly-detection-spatial-temporal-data` and `python -m anomaly_detection_spatial_temporal_data`
 """
