@@ -1,0 +1,14 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# This is a boilerplate parameters config generated for pipeline 'iot_gdn_data_processing'
+# using Kedro 0.18.1.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://kedro.readthedocs.io/en/0.18.1/kedro_project_setup/configuration.html#parameters
+
+label_column_name_gdn: 'attack'
+
+train_clean_key: 'train_set1_anomalies'
+train_anom_key: 'train_set2_anomalies'
+test_anom_key: 'test_set_anomalies'

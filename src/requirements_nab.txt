@@ -1,0 +1,7 @@
+kedro==0.18.0
+juliacall==0.4.3
+ipykernel==6.15.1
+tqdm
+matplotlib
+gensim==4.2.0
+nltk==3.7

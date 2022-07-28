@@ -1,0 +1,180 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+###########################################################################################################################
+# File path for financial fraud dataset 
+financial_data:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/financial_fraud/bs140513_032310.csv
+## for graph model 
+processed_node_id:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/financial_fraud/node_id.csv
+
+processed_edge_list:
+  type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
+  filepath: data/02_intermediate/financial_fraud/edge_list.npz
+
+processed_edge_label:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/financial_fraud/edge_label.csv
+
+preprocessed_graph_data:
+  type: pickle.PickleDataSet
+  filepath: data/03_primary/financial_fraud/training_data.pkl
+
+preprocessed_adj_matrix_eigen_data:
+  type: pickle.PickleDataSet
+  filepath: data/05_model_input/financial_fraud/eigen.pkl
+
+data_dict:
+  type: pickle.PickleDataSet
+  filepath: data/05_model_input/financial_fraud/data_dict.pkl
+  
+train_result:
+  type: pickle.PickleDataSet
+  filepath: data/07_model_output/financial_fraud/train_result.pkl
+
+model_path:
+  type: text.TextDataSet
+  filepath: data/07_model_output/financial_fraud/model_path.txt
+  
+inference_result:
+  type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
+  filepath: data/07_model_output/financial_fraud/inference_result.npz
+  
+## for NAB 
+financial_processed_ts_label:
+  type: text.TextDataSet
+  filepath: data/02_intermediate/financial_fraud/ts_label/labels_json_filepath.txt
+###########################################################################################################################
+
+# File path for iot dataset 
+iot_data_train_clean:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/iot/BATADAL_dataset03_train_no_anomaly.csv
+  
+iot_data_train_anom:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/iot/BATADAL_dataset04_train_some_anomaly.csv
+  
+iot_data_test:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/iot/BATADAL_test_dataset_some_anomaly.csv
+  
+iot_sensor_cols_txt:
+  type: text.TextDataSet
+  filepath: data/03_primary/iot/iot_sensor_list_batadal.txt
+  
+iot_data_gdn_train:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot/gdn/iot_gdn_train.csv
+  save_args:
+    index: False
+
+iot_data_gdn_train_anom:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot/gdn/iot_gdn_train_anom.csv
+  save_args:
+    index: False
+  
+iot_data_gdn_test:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot/gdn/iot_gdn_test.csv
+  save_args:
+    index: False
+    
+iot_data_ncad_train:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot/ncad/iot_ncad_train.csv
+  save_args:
+    index: False
+    
+iot_data_ncad_train_anom:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot/ncad/iot_ncad_train_anom.csv
+  save_args:
+    index: False
+    
+iot_data_ncad_test:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/iot/ncad/iot_ncad_test.csv
+  save_args:
+    index: False
+    
+iot_test_inference_scores:
+  type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
+  filepath: data/07_model_output/iot/ncad/inference_scores.npz
+  
+iot_test_inference_votes:
+  type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
+  filepath: data/07_model_output/iot/ncad/inference_votes.npz
+  
+## for NAB 
+iot_processed_ts_label:
+  type: text.TextDataSet
+  filepath: data/02_intermediate/iot/ts_label/labels_json_filepath.txt
+  
+###########################################################################################################################
+# File path for user behavior dataset 
+user_behavior_data:
+  #type: pandas.CSVDataSet
+  type: text.TextDataSet
+  filepath: data/01_raw/user_behavior/input_file_path.txt 
+  #filepath: data/01_raw/user_behavior/RC_2008-05  
+
+## for graph model 
+reddit_processed_user_id:
+  type: pickle.PickleDataSet
+  filepath: data/02_intermediate/user_behavior/u2index.pkl
+
+reddit_processed_topic_id:
+  type: pickle.PickleDataSet
+  filepath: data/02_intermediate/user_behavior/p2index.pkl
+
+reddit_processed_data_split:
+  type: pickle.PickleDataSet
+  filepath: data/02_intermediate/user_behavior/data_tvt.pkl
+
+reddit_processed_edge_list:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/user_behavior/edge_list.csv
+  
+reddit_processed_user_feature:
+  type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
+  filepath: data/02_intermediate/user_behavior/user2vec_npy.npz
+
+reddit_processed_topic_feature:
+  type: anomaly_detection_spatial_temporal_data.extras.datasets.numpy_array.NumpyDataSet
+  filepath: data/02_intermediate/user_behavior/prod2vec_npy.npz
+
+reddit_processed_node_label:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/user_behavior/user_label.csv
+
+reddit_data_dict:
+  type: pickle.PickleDataSet
+  filepath: data/05_model_input/user_behavior/data_dict.pkl
+
+reddit_train_result:
+  type: pickle.PickleDataSet
+  filepath: data/07_model_output/user_behavior/train_result.pkl
+
+reddit_model_path:
+  type: text.TextDataSet
+  filepath: data/07_model_output/user_behavior/model_path.txt
+
+###########################################################################################################################
+# File path for wifi dataset 
+wifi_sensor_cols_txt:
+  type: text.TextDataSet
+  filepath: data/03_primary/wifi/gdn/wifi_sensor_list.txt
+  
+wifi_data_gdn_train:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/wifi/gdn/wifi_gdn_train.csv
+  
+wifi_data_gdn_test:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/wifi/gdn/wifi_gdn_test.csv
+###########################################################################################################################

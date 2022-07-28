@@ -1,0 +1,16 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# This is a boilerplate parameters config generated for pipeline 'nab_model'
+# using Kedro 0.18.0.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://kedro.readthedocs.io/en/0.18.0/kedro_project_setup/configuration.html#parameters
+nab_model_options:
+  model_name: 'contextOSE'
+  model_path: 'src/anomaly_detection_spatial_temporal_data/model/NAB'
+  iot_input_dir: 'data/02_intermediate/iot/ts_data'
+  financial_input_dir: "data/02_intermediate/financial_fraud/ts_data"
+  iot_output_dir: 'data/07_model_output/iot/ts_result'
+  financial_output_dir: "data/07_model_output/financial_fraud/ts_result"
+  label_path: 'data/02_intermediate/iot/ts_label/labels-combined.json'

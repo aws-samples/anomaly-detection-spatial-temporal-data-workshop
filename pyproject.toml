@@ -1,0 +1,22 @@
+[tool.kedro]
+package_name = "anomaly_detection_spatial_temporal_data"
+project_name = "Anomaly Detection For Spatial Temporal Data"
+project_version = "0.18.0"
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 88
+known_third_party = "kedro"
+
+[tool.pytest.ini_options]
+addopts = """
+--cov-report term-missing \
+--cov src/anomaly_detection_spatial_temporal_data -ra"""
+
+[tool.coverage.report]
+fail_under = 0
+show_missing = true
+exclude_lines = ["pragma: no cover", "raise NotImplementedError"]
