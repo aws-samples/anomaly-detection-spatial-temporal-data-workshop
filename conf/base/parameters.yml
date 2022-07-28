@@ -1,3 +1,6 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 input_dataset: iot #only needed if there are multiple datasets tried for the same model
 # input_dataset: financial    
 # input_dataset: wifi
