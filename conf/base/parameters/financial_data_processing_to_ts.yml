@@ -1,3 +1,6 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 # This is a boilerplate parameters config generated for pipeline 'financial_data_processing_to_ts'
 # using Kedro 0.18.0.
 #
