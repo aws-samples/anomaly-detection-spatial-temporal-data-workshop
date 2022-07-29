@@ -11,7 +11,7 @@ import os
 from typing import Dict, Tuple
 import json
 
-from anomaly_detection_spatial_temporal_data.data.data_transform import CSVtoDynamicGraphWithNodeFeatures
+from anomaly_detection_spatial_temporal_data.feature.node_feat import CSVtoDynamicGraphWithNodeFeatures
 
 def preprocess_comment_history(comment_history_data_file_path: str) -> Tuple:
     """

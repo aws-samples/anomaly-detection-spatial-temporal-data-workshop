@@ -1,7 +1,6 @@
 kedro==0.18.0
 torch==1.6.0
 scikit_learn==0.24.1
-ujson==4.0.2
 zstandard==0.18.0
 gensim==4.2.0
 ipykernel==6.15.1
