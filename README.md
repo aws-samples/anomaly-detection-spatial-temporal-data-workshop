@@ -123,6 +123,11 @@ kedro run -h
 #### For financial fraud use case 
 You can run NAB and TADDY modeling framework for the financial fraud use case. For NAB, time series of amount spent for each unique (customer, category) pair is constructed. For TADDY, a dynamic interaction graph between customer and merchant is built. Each edge represents a transaction record between the customer and merchant.
 
+To do this, follow the below steps, replace `<model>` with one of `nab`, `taddy`
+1. Set input dataset to `financial` in `conf/base/parameters.yml`
+2. Activate the NAB repository: `source src/kedro-<model>-venv/bin/activate` (you would need to install the virtual env first)
+3. Run the pipeline: `kedro run`
+
 #### For IoT network anomaly use case 
 You can run NAB, NCAD and GDN modeling framework for the IoT network anomaly use case. To do this, follow the below steps, replace `<model>` with one of `nab`, `ncad`, `gdn`
 1. Set input dataset to `iot` in `conf/base/parameters.yml`
