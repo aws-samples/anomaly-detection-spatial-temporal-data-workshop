@@ -125,20 +125,27 @@ You can run NAB and TADDY modeling framework for the financial fraud use case. F
 
 To do this, follow the below steps, replace `<model>` with one of `nab`, `taddy`
 1. Set input dataset to `financial` in `conf/base/parameters.yml`
-2. Activate the NAB repository: `source src/kedro-<model>-venv/bin/activate` (you would need to install the virtual env first)
+2. Activate the relevant model virtual env: `source src/kedro-<model>-venv/bin/activate` (you would need to install the virtual env first)
 3. Run the pipeline: `kedro run`
 
 #### For IoT network anomaly use case 
 You can run NAB, NCAD and GDN modeling framework for the IoT network anomaly use case. To do this, follow the below steps, replace `<model>` with one of `nab`, `ncad`, `gdn`
 1. Set input dataset to `iot` in `conf/base/parameters.yml`
-2. Activate the NAB repository: `source src/kedro-<model>-venv/bin/activate`
+2. Activate the relevant model virtual env: `source src/kedro-<model>-venv/bin/activate`
 3. Run the pipeline: `kedro run`
 
 #### For Wifi network anomaly use case
 You can run NAB and GDN modeling framework for the Wifi network anomaly use case. 
+To do this, follow the below steps, replace `<model>` with one of `nab`, `gdn`
+1. Set input dataset to `wifi` in `conf/base/parameters.yml`
+2. Activate the relevant model virtual env: `source src/kedro-<model>-venv/bin/activate` (you would need to install the virtual env first)
+3. Run the pipeline: `kedro run`
 
 #### For Reddit user behavior use case
 You can run ELAND modeling framework for the Reddit user behavior anomaly use case. 
+To do this, follow the below steps. Since there are only one dataset using ELAND model. You won't need to the change input dataset name in `conf/base/parameters.yml`
+1. Activate the ELAND model virtual env: `source src/kedro-eland-venv/bin/activate` (you would need to install the virtual env first)
+2. Run the pipeline: `kedro run`
 
 ### Instructions on running notebooks
 You can select the custom kernel after installing the corresponding virtual environment for each use case. For example, to run pipeline under the NCAD modeling framework, you can select the following icon on the instance
