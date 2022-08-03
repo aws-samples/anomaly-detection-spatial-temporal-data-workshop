@@ -62,7 +62,6 @@ class NABAnomalyDetector:
     def predict(self):
         """Predict anomaly records for all csv time series under input dir
         """
-        #dummy_label_path: str = self._generate_dummy_labels(self.input_path)
         output_dir_path = Path(self.output_path).resolve()
         if output_dir_path.exists():
             shutil.rmtree(output_dir_path)

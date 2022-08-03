@@ -42,9 +42,5 @@ def split_transaction_history_into_time_series(financial_data: pd.DataFrame, par
         parameters['ts_label_dir'],
     
     )
-#     anomaly_dict = defaultdict(list)
-#     #TODO: add function to form anomaly dict 
-#     label_dict_filepath = f"{label_save_dir}/labels-combined.json"     
-#     with open(label_dict_filepath, "w") as fp:
-#         json.dump(anomaly_dict, fp, indent=4)
+
     return label_dict_filepath
