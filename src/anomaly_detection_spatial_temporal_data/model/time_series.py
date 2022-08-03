@@ -58,22 +58,11 @@ class NABAnomalyDetector:
         current_dir = Path(__file__).parent
         return str((current_dir / relative_path).resolve())
     
-    def _generate_dummy_labels(self, data_dir: str) -> str:
-        """Generate a dummy label JSON file and return its path"""
-        data_dir_path = Path(data_dir)
-        dummy_labels = dict()
-        for file_path in data_dir_path.rglob("*.csv"):
-            file_path_relative = file_path.relative_to(data_dir_path)
-            dummy_labels[str(file_path_relative)] = []
-        dummy_label_path = self.nab_path / "labels" / "dummy_labels.json"
-        with dummy_label_path.open("w") as file:
-            json.dump(dummy_labels, file, indent=4)
-        return str(dummy_label_path.resolve())
 
     def predict(self):
         """Predict anomaly records for all csv time series under input dir
         """
-        dummy_label_path: str = self._generate_dummy_labels(self.input_path)
+        #dummy_label_path: str = self._generate_dummy_labels(self.input_path)
         output_dir_path = Path(self.output_path).resolve()
         if output_dir_path.exists():
             shutil.rmtree(output_dir_path)

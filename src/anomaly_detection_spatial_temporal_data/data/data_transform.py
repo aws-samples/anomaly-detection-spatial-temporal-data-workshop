@@ -10,6 +10,8 @@ import numpy as np
 from tqdm import tqdm
 from scipy.sparse import csr_matrix,coo_matrix,eye
 import re
+import json
+from pathlib import Path
 import collections
 from anomaly_detection_spatial_temporal_data.utils import ensure_directory
 
@@ -18,6 +20,18 @@ class CSVtoTS():
     
     def __init__(self, df):
         self.df = df
+        
+    def generate_dummy_labels(self, data_dir: str, label_dir:str) -> str:
+        """Generate a dummy label JSON file and return its path"""
+        data_dir_path = Path(data_dir)
+        dummy_labels = dict()
+        for file_path in data_dir_path.rglob("*.csv"):
+            file_path_relative = file_path.relative_to(data_dir_path)
+            dummy_labels[str(file_path_relative)] = []
+        dummy_label_path = Path(f"{label_dir}/labels-combined.json")
+        with dummy_label_path.open("w") as file:
+            json.dump(dummy_labels, file, indent=4)
+        return str(dummy_label_path.resolve())
         
     def split_data_into_separate_ts(self, ts_count_threshold, time_col, value_col, label_col, data_dir, label_dir):
         customer_category_trans_count = self.df.groupby(by=['customer','category']).agg({time_col:'count'})

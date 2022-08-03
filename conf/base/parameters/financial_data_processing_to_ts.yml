@@ -11,5 +11,5 @@ ts_process_options:
   time_column: 'step'
   value_column: 'amount'
   label_column: 'fraud'
-  ts_data_dir: '/home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/02_intermediate/financial_fraud/ts_data'
-  ts_label_dir: '/home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data/data/02_intermediate/financial_fraud/ts_label'
+  ts_data_dir: 'data/02_intermediate/financial_fraud/ts_data'
+  ts_label_dir: 'data/02_intermediate/financial_fraud/ts_label'
