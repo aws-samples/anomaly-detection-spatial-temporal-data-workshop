@@ -46,16 +46,19 @@ We advise to download the datasets before coming to the live session, to have a 
 Dataset can be download from [here](https://www.kaggle.com/datasets/ealaxi/banksim1), please download the two csv files (bs140513_032310.csv and bsNET140513_032310.csv) and put them under : `data/01_raw/financial_fraud`
 
 #### For IoT network anomaly use case 
-The IoT dataset is source from the [BATADAL website](http://www.batadal.net/data.html) and is placed under `data/01_raw/iot`. This is done by the notebooks [notebooks/download_data.ipynb](notebooks/download_data.ipynb) and [notebooks/industrial_iot/1.0-nk-batadal-exploration.ipynb](notebooks/industrial_iot/1.0-nk-batadal-exploration.ipynb). Please be sure to run one of these notebooks to obtain the dataset.
+The IoT dataset is sourced from the [BATADAL website](http://www.batadal.net/data.html) and is placed under `data/01_raw/iot`. This is done by the notebooks [notebooks/download_data.ipynb](notebooks/download_data.ipynb) and [notebooks/industrial_iot/1.0-nk-batadal-exploration.ipynb](notebooks/industrial_iot/1.0-nk-batadal-exploration.ipynb). Please be sure to run one of these notebooks to obtain the dataset.
 
 #### For Wifi network anomaly use case
+The Wifi network dataset is linked from the [SpaMHMM repo](https://github.com/dpernes/spamhmm/blob/master/README.md#datasets) and downloaded raw data files should be placed under `data/01_raw/wifi`. Follow steps in [notebooks/download_data.ipynb](notebooks/download_data.ipynb). 
 
 #### For Reddit user behavior use case
-For more details, please refer to [notebooks/download_data.ipynb](notebooks/download_data.ipynb)
+The Reddit dataset is sourced from [Pushshift](https://files.pushshift.io/reddit/comments/) and downloaded raw data file should be placed under `data/01_raw/user_behavior`. Follow steps in [notebooks/download_data.ipynb](notebooks/download_data.ipynb). 
 
-## Outline of the Tutorial
 
-I. Introduction of authors and welcome to KDD [5 mins]
+## Outline of the Tutorial (tentative)
+
+I. Introduction [5 mins]
+
 II. Overview [10 mins]
  - Overview of use-cases
    - Telecom
@@ -89,7 +92,7 @@ V. Hands-on [2 hours]
  
 VI. Conclusion and Take-away [5 mins]
 
-### Instructions on running Kedro pipeline 
+## Instructions on running Kedro pipeline 
 First activate the virtual environment for the specific use case:
 
 ```
@@ -120,7 +123,7 @@ For more details, you can run the command:
 kedro run -h
 ```
 
-#### For financial fraud use case 
+#### Running pipelines for financial fraud use case 
 You can run NAB and TADDY modeling framework for the financial fraud use case. For NAB, time series of amount spent for each unique (customer, category) pair is constructed. For TADDY, a dynamic interaction graph between customer and merchant is built. Each edge represents a transaction record between the customer and merchant.
 
 To do this, follow the below steps, replace `<model>` with one of `nab`, `taddy`
@@ -128,42 +131,42 @@ To do this, follow the below steps, replace `<model>` with one of `nab`, `taddy`
 2. Activate the relevant model virtual env: `source src/kedro-<model>-venv/bin/activate` (you would need to install the virtual env first)
 3. Run the pipeline: `kedro run`
 
-#### For IoT network anomaly use case 
+#### Running pipelines for IoT network anomaly use case 
 You can run NAB, NCAD and GDN modeling framework for the IoT network anomaly use case. To do this, follow the below steps, replace `<model>` with one of `nab`, `ncad`, `gdn`
 1. Set input dataset to `iot` in `conf/base/parameters.yml`
 2. Activate the relevant model virtual env: `source src/kedro-<model>-venv/bin/activate`
 3. Run the pipeline: `kedro run`
 
-#### For Wifi network anomaly use case
+#### Running pipelines for Wifi network anomaly use case
 You can run NAB and GDN modeling framework for the Wifi network anomaly use case. 
 To do this, follow the below steps, replace `<model>` with one of `nab`, `gdn`
 1. Set input dataset to `wifi` in `conf/base/parameters.yml`
 2. Activate the relevant model virtual env: `source src/kedro-<model>-venv/bin/activate` (you would need to install the virtual env first)
 3. Run the pipeline: `kedro run`
 
-#### For Reddit user behavior use case
+#### Running pipelines for Reddit user behavior use case
 You can run ELAND modeling framework for the Reddit user behavior anomaly use case. 
 To do this, follow the below steps. Since there are only one dataset using ELAND model. You won't need to the change input dataset name in `conf/base/parameters.yml`
 1. Activate the ELAND model virtual env: `source src/kedro-eland-venv/bin/activate` (you would need to install the virtual env first)
 2. Run the pipeline: `kedro run`
 
-### Instructions on running notebooks
+## Instructions on running notebooks
 You can select the custom kernel after installing the corresponding virtual environment for each use case. For example, to run pipeline under the NCAD modeling framework, you can select the following icon on the instance
 
 ![Select your custom kernel](img/custom_kernel.png)
 
-#### For financial fraud use case 
+#### Running notebooks for financial fraud use case 
 Under *notebooks/financial_fraud*, choose `kedro-taddy-venv` for notebook 1.0, 1.1, 2.1, 3.1. Choose `kedro-nab-venv` for notebook 1.2, 2.2. 
 
-#### For IoT network anomaly use case 
+#### Running notebooks for  IoT network anomaly use case 
 Under *notebooks/industrial_iot*, choose `kedro-gdn-venv` for notebook `*gdn`. Choose `kedro-nab-venv` for notebook `*nab`, and `kedro-ncad-venv`for notebooks `*ncad`. If the environment was set up correctly, the notebook will automatically choose the correct environment.
 
 
-#### For Wifi network anomaly use case
+#### Running notebooks for  Wifi network anomaly use case
 Under *notebooks/telecom_network*, choose `kedro-gdn-venv` for notebook `*gdn`. If the environment was set up correctly, the notebook will automatically choose the correct environment.
 
-#### For Reddit user behavior use case
-
+#### Running notebooks for  Reddit user behavior use case
+Under *notebooks/user_behavior*, choose `kedro-eland-venv`. If the environment was set up correctly, the notebook will automatically choose the correct environment.
 
 
 ## References 
