@@ -15,6 +15,8 @@ cd ../src/
 # model is `eland`, `gdn`, `nab`, `ncad`, and `taddy`
 chmod +x prepare_<model>_environment.sh 
 ./prepare_<model>_environment.sh 
+
+or alternatively, you can run bash prepare_<model>_environment.sh without changing mode.
 ```
 
 ## Overview
