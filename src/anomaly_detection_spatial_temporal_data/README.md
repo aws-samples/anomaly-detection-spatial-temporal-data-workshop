@@ -4,71 +4,43 @@ SPDX-License-Identifier: Apache-2.0
 
 # Pipeline
 
-> *Note:* This is a `README.md` boilerplate generated using `Kedro 0.18.0`.
-
 ## Overview
 
-This pipeline:
-1. splits the data into training dataset and testing dataset using a configurable ratio found in `conf/base/parameters.yml`
-2. runs a simple 1-nearest neighbour model (`make_prediction` node) and makes prediction dataset
-3. reports the model accuracy on a test set (`report_accuracy` node)
+This repo contains multiple pipelines registered in `pipeline_registry.py`. 
 
-## Pipeline inputs
+## Pipeline Summary
 
-### `example_iris_data`
+### Data Pipelines 
+|   Pipeline Name                  |     Purpose        |
+| -----------------------------    | ------------------------------------------------------- |
+| financial_data_processing        | transform raw transaction data into graph for TADDY     |
+| financial_data_processing_to_ts  | transform raw transaction data into time series for NAB |
+| iot_gdn_data_processing          | transform raw sensor data into formats for GDN          |
+| iot_nab_data_processing          | transform raw sensor data into time series for NAB      |
+| iot_ncad_data_processing         | transform raw sensor data into graphs for NCAD          |
+| reddit_data_processing           | transform raw Reddit data into graph for ELAND          |
+| wifi_gdn_data_processing         | transform raw wifi nework data into formats for GDN     |
 
-|      |                    |
-| ---- | ------------------ |
-| Type | `pandas.CSVDataSet` |
-| Description | Example iris data containing columns |
+### Model Training/Inference Pipelines 
 
-
-### `parameters`
-
-|      |                    |
-| ---- | ------------------ |
-| Type | `dict` |
-| Description | Project parameter dictionary that must contain the following keys: `train_fraction` (the ratio used to determine the train-test split), `random_state` (random generator to ensure train-test split is deterministic) and `target_column` (identify the target column in the dataset) |
-
-
-## Pipeline intermediate outputs
-
-### `X_train`
-
-|      |                    |
-| ---- | ------------------ |
-| Type | `pandas.DataFrame` |
-| Description | DataFrame containing train set features |
-
-### `y_train`
-
-|      |                    |
-| ---- | ------------------ |
-| Type | `pandas.Series` |
-| Description | Series containing train set target. |
-
-### `X_test`
-
-|      |                    |
-| ---- | ------------------ |
-| Type | `pandas.DataFrame` |
-| Description | DataFrame containing test set features |
-
-### `y_test`
-
-|      |                    |
-| ---- | ------------------ |
-| Type | `pandas.Series` |
-| Description | Series containing test set target |
-
-### `y_pred`
-
-|      |                    |
-| ---- | ------------------ |
-| Type | `pandas.Series` |
-| Description | Predictions from the 1-nearest neighbour model |
+|   Pipeline Name                  |     Purpose        |
+| --------------------------       |  -------------------------------------------------------|
+| nab_model                        | train NAB model on time series                          |
+| ncad                             | train NCAD model on time series                         |
+| gdn                              | train GDN model on multivariate time series             |
+| taddy                            | train TADDY model on financial transaction network data |
+| eland                            | train ELAND model on Reddit Posts/Comments graph        |
 
 
-## Pipeline outputs
+# Model 
 
-### `None`
+This folder contains class and functions for NAB, NCAD, ELAND, TADDY and GDN modeling framework 
+
+# Feature
+
+This folder contains class and functions to extract node features for the user behavior use case. 
+
+# Data
+
+This folder contains class and functions to transfrom raw data to intermediate data formats. 
+
