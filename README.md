@@ -9,50 +9,129 @@ An example of Kedro solution pipeline is shown below.
 
 If you want to visualize the Kedro pipeline, please follow the instruction [here](https://kedro.readthedocs.io/en/0.18.0/tutorial/visualise_pipeline.html). For this tutorial, we will skip this part. 
 
-## Setting up the environment
+## Setting up the environments
 
 We declared dependencies for different pipelines for different use cases and prepared shell script to install the virtual environment. Once the virtual environment is installed, you can run the notebook using the customized env/kernel. Also, user can run the corresponding pipeline after activating the virtual env. 
 
-For example, to run the financial fraud detection pipeline using the TADDY(dynamic graph based) modeling framework, follow these steps below: 
-1. Prepare the Kedro Taddy virtual environment 
-Run the following command from the repo root directory:
+1. First ensure you are in the root directory of this repository:
 
 ```
-cd src
+sh-4.2$ pwd
+/home/ec2-user/SageMaker/anomaly-detection-spatial-temporal-data-workshop
+```
+
+2. Setting up the environment involves running the shell scripts in the `src/` folder. To do so, we will navigate to the `src/` folder, and run each script sequentially.
+
+```
+cd src 
+bash prepare_eland_environment.sh
+bash prepare_gdn_environment.sh
 bash prepare_taddy_environment.sh
+bash prepare_nab_environment.sh
+bash prepare_ncad_environment.sh
 ```
 
-2. Activate the virtual environment
-After you install the virtual environment, you should see a folder with the name `kedro-taddy-venv`. 
-Activate the virtual environment by running the following command:
-```
-source kedro-taddy-venv/bin/activate
-```
-Please change the virtual env name accordingly based on which virtual environment you just installed. 
+3. The above scripts will create a new python virtual environment, install the required python packages and register the environment with the Jupyter kernel. We can then activate one of the environments using `source`. For example the running the following command will activate the `kedro-eland-venv` python virtual environment:
 
-3. Run the pipeline 
-Note that kedro pipeline has to be initiated from the repo root directory. So run the following command: 
 ```
-cd ..
-kedro run 
+source kedro-eland-venv/bin/activate
 ```
-
-4. Repeat the above with `prepare_eland_environment.sh`, `prepare_gdn_environment.sh`, `prepare_nab_environment.sh`, `prepare_ncad_environment.sh`, `prepare_el_environment.sh` to setup all of the required environments.
 
 ## Downloading the dataset
 We advise to download the datasets before coming to the live session, to have a copy on your local laptop. 
 
-#### For financial fraud use case 
-Dataset can be download from [here](https://www.kaggle.com/datasets/ealaxi/banksim1), please download the two csv files (bs140513_032310.csv and bsNET140513_032310.csv) and put them under : `data/01_raw/financial_fraud`
+After setting up the environments, we will download the datasets relevant to each use case. The notebook [notebooks/download_data.ipynb](notebooks/download_data.ipynb) walks through how to download the dataset. Alternatively, follow the manual instructions below.
 
-#### For IoT network anomaly use case 
-The IoT dataset is sourced from the [BATADAL website](http://www.batadal.net/data.html) and is placed under `data/01_raw/iot`. This is done by the notebooks [notebooks/download_data.ipynb](notebooks/download_data.ipynb) and [notebooks/industrial_iot/1.0-nk-batadal-exploration.ipynb](notebooks/industrial_iot/1.0-nk-batadal-exploration.ipynb). Please be sure to run one of these notebooks to obtain the dataset.
+#### User Behavior: Reddit user behavior dataset
+The Reddit dataset is sourced from [Pushshift](https://files.pushshift.io/reddit/comments/) and downloaded raw data file should be placed under `data/01_raw/user_behavior`. Follow steps in [notebooks/download_data.ipynb](notebooks/download_data.ipynb). 
 
-#### For Wifi network anomaly use case
+#### Telecom Network: Wifi network anomaly dataset
 The Wifi network dataset is linked from the [SpaMHMM repo](https://github.com/dpernes/spamhmm/blob/master/README.md#datasets) and downloaded raw data files should be placed under `data/01_raw/wifi`. Follow steps in [notebooks/download_data.ipynb](notebooks/download_data.ipynb). 
 
-#### For Reddit user behavior use case
-The Reddit dataset is sourced from [Pushshift](https://files.pushshift.io/reddit/comments/) and downloaded raw data file should be placed under `data/01_raw/user_behavior`. Follow steps in [notebooks/download_data.ipynb](notebooks/download_data.ipynb). 
+#### Financial Fraud: Financial fraud dataset
+**Note**: This dataset is hosted on Kaggle. You will need a Kaggle account to be able to download this dataset.
+
+Dataset can be download from [here](https://www.kaggle.com/datasets/ealaxi/banksim1), please download the two csv files (bs140513_032310.csv and bsNET140513_032310.csv) and put them under : `data/01_raw/financial_fraud`. Follow steps in [notebooks/download_data.ipynb](notebooks/download_data.ipynb). 
+
+#### Industrial IoT: IoT network anomaly dataset
+The IoT dataset is sourced from the [BATADAL website](http://www.batadal.net/data.html) and is placed under `data/01_raw/iot`. This is done by the notebooks [notebooks/download_data.ipynb](notebooks/download_data.ipynb) and [notebooks/industrial_iot/1.0-nk-batadal-exploration.ipynb](notebooks/industrial_iot/1.0-nk-batadal-exploration.ipynb). Please be sure to run one of these notebooks to obtain the dataset.
+
+
+## Instructions on running notebooks
+You can select the custom kernel after installing the corresponding virtual environment for each use case. For example, to run pipeline under the NCAD modeling framework, you can select the following icon on the instance
+
+![Select your custom kernel](img/custom_kernel.png)
+
+#### Running notebooks for  Reddit user behavior use case
+Under *notebooks/user_behavior*, choose `kedro-eland-venv`. If the environment was set up correctly, the notebook will automatically choose the correct environment.
+
+#### Running notebooks for  Wifi network anomaly use case
+Under *notebooks/telecom_network*, choose `kedro-gdn-venv` for notebook `*gdn`. If the environment was set up correctly, the notebook will automatically choose the correct environment.
+
+#### Running notebooks for financial fraud use case 
+Under *notebooks/financial_fraud*, choose `kedro-taddy-venv` for notebook 1.0, 1.1, 2.1, 3.1. Choose `kedro-nab-venv` for notebook 1.2, 2.2. 
+
+#### Running notebooks for  IoT network anomaly use case 
+Under *notebooks/industrial_iot*, choose `kedro-gdn-venv` for notebook `*gdn`. Choose `kedro-nab-venv` for notebook `*nab`, and `kedro-ncad-venv`for notebooks `*ncad`. If the environment was set up correctly, the notebook will automatically choose the correct environment.
+
+
+## Instructions on running Kedro pipeline 
+First activate the virtual environment for the specific use case:
+
+```
+source src/<name_of_use_case>/bin/activate
+```
+
+You can run the entire pipeline for one use case with the corresponding activated virtual environment:
+```
+# make sure you are in the root directory
+kedro run
+```
+You can also run your specific Kedro pipeline(sub-pipeline) with:
+
+```
+kedro run --pipeline <pipeline_name_in_registry>
+```
+If you want to run the pipeline with specific tags, you can run: 
+```
+kedro run --pipeline <pipeline_name_in_registry> --tag <data_tag,model_tag>
+```
+You can even run your specific Kedro node function in the pipeline(sub-pipeline) with:
+
+```
+kedro run --node <node_name_in_registry>
+```
+For more details, you can run the command:
+```
+kedro run -h
+```
+
+#### Running pipelines for Reddit user behavior use case
+You can run ELAND modeling framework for the Reddit user behavior anomaly use case. 
+To do this, follow the below steps. Since there are only one dataset using ELAND model. You won't need to the change input dataset name in `conf/base/parameters.yml`
+1. Activate the ELAND model virtual env: `source src/kedro-eland-venv/bin/activate` (you would need to install the virtual env first)
+2. Run the pipeline: `kedro run`
+
+#### Running pipelines for Wifi network anomaly use case
+You can run NAB and GDN modeling framework for the Wifi network anomaly use case. 
+To do this, follow the below steps, replace `<model>` with one of `nab`, `gdn`
+1. Set input dataset to `wifi` in `conf/base/parameters.yml`
+2. Activate the relevant model virtual env: `source src/kedro-<model>-venv/bin/activate` (you would need to install the virtual env first)
+3. Run the pipeline: `kedro run`
+
+#### Running pipelines for financial fraud use case 
+You can run NAB and TADDY modeling framework for the financial fraud use case. For NAB, time series of amount spent for each unique (customer, category) pair is constructed. For TADDY, a dynamic interaction graph between customer and merchant is built. Each edge represents a transaction record between the customer and merchant.
+
+To do this, follow the below steps, replace `<model>` with one of `nab`, `taddy`
+1. Set input dataset to `financial` in `conf/base/parameters.yml`
+2. Activate the relevant model virtual env: `source src/kedro-<model>-venv/bin/activate` (you would need to install the virtual env first)
+3. Run the pipeline: `kedro run`
+
+#### Running pipelines for IoT network anomaly use case 
+You can run NAB, NCAD and GDN modeling framework for the IoT network anomaly use case. To do this, follow the below steps, replace `<model>` with one of `nab`, `ncad`, `gdn`
+1. Set input dataset to `iot` in `conf/base/parameters.yml`
+2. Activate the relevant model virtual env: `source src/kedro-<model>-venv/bin/activate`
+3. Run the pipeline: `kedro run`
 
 
 ## Outline of the Tutorial (tentative)
@@ -89,85 +168,7 @@ V. Hands-on [2 hours]
  - Training models using Kedro pipelines
  - Training models using Jupyter Notebooks
 
- 
 VI. Conclusion and Take-away [5 mins]
-
-## Instructions on running Kedro pipeline 
-First activate the virtual environment for the specific use case:
-
-```
-source src/<name_of_use_case>/bin/activate
-```
-
-You can run the entire pipeline for one use case with the corresponding activated virtual environment:
-```
-# make sure you are in the root directory
-kedro run
-```
-You can also run your specific Kedro pipeline(sub-pipeline) with:
-
-```
-kedro run --pipeline <pipeline_name_in_registry>
-```
-If you want to run the pipeline with specific tags, you can run: 
-```
-kedro run --pipeline <pipeline_name_in_registry> --tag <data_tag,model_tag>
-```
-You can even run your specific Kedro node function in the pipeline(sub-pipeline) with:
-
-```
-kedro run --node <node_name_in_registry>
-```
-For more details, you can run the command:
-```
-kedro run -h
-```
-
-#### Running pipelines for financial fraud use case 
-You can run NAB and TADDY modeling framework for the financial fraud use case. For NAB, time series of amount spent for each unique (customer, category) pair is constructed. For TADDY, a dynamic interaction graph between customer and merchant is built. Each edge represents a transaction record between the customer and merchant.
-
-To do this, follow the below steps, replace `<model>` with one of `nab`, `taddy`
-1. Set input dataset to `financial` in `conf/base/parameters.yml`
-2. Activate the relevant model virtual env: `source src/kedro-<model>-venv/bin/activate` (you would need to install the virtual env first)
-3. Run the pipeline: `kedro run`
-
-#### Running pipelines for IoT network anomaly use case 
-You can run NAB, NCAD and GDN modeling framework for the IoT network anomaly use case. To do this, follow the below steps, replace `<model>` with one of `nab`, `ncad`, `gdn`
-1. Set input dataset to `iot` in `conf/base/parameters.yml`
-2. Activate the relevant model virtual env: `source src/kedro-<model>-venv/bin/activate`
-3. Run the pipeline: `kedro run`
-
-#### Running pipelines for Wifi network anomaly use case
-You can run NAB and GDN modeling framework for the Wifi network anomaly use case. 
-To do this, follow the below steps, replace `<model>` with one of `nab`, `gdn`
-1. Set input dataset to `wifi` in `conf/base/parameters.yml`
-2. Activate the relevant model virtual env: `source src/kedro-<model>-venv/bin/activate` (you would need to install the virtual env first)
-3. Run the pipeline: `kedro run`
-
-#### Running pipelines for Reddit user behavior use case
-You can run ELAND modeling framework for the Reddit user behavior anomaly use case. 
-To do this, follow the below steps. Since there are only one dataset using ELAND model. You won't need to the change input dataset name in `conf/base/parameters.yml`
-1. Activate the ELAND model virtual env: `source src/kedro-eland-venv/bin/activate` (you would need to install the virtual env first)
-2. Run the pipeline: `kedro run`
-
-## Instructions on running notebooks
-You can select the custom kernel after installing the corresponding virtual environment for each use case. For example, to run pipeline under the NCAD modeling framework, you can select the following icon on the instance
-
-![Select your custom kernel](img/custom_kernel.png)
-
-#### Running notebooks for financial fraud use case 
-Under *notebooks/financial_fraud*, choose `kedro-taddy-venv` for notebook 1.0, 1.1, 2.1, 3.1. Choose `kedro-nab-venv` for notebook 1.2, 2.2. 
-
-#### Running notebooks for  IoT network anomaly use case 
-Under *notebooks/industrial_iot*, choose `kedro-gdn-venv` for notebook `*gdn`. Choose `kedro-nab-venv` for notebook `*nab`, and `kedro-ncad-venv`for notebooks `*ncad`. If the environment was set up correctly, the notebook will automatically choose the correct environment.
-
-
-#### Running notebooks for  Wifi network anomaly use case
-Under *notebooks/telecom_network*, choose `kedro-gdn-venv` for notebook `*gdn`. If the environment was set up correctly, the notebook will automatically choose the correct environment.
-
-#### Running notebooks for  Reddit user behavior use case
-Under *notebooks/user_behavior*, choose `kedro-eland-venv`. If the environment was set up correctly, the notebook will automatically choose the correct environment.
-
 
 ## References 
 1. Subutai Ahmad, Alexander Lavin, Scott Purdy, and Zuha Agha. 2017. Unsupervised real-time anomaly detection for streaming data. 
