@@ -3,7 +3,7 @@ scikit-learn==1.0.2
 torch==1.7.1
 transformers==3.5.1
 networkx==2.5
-protobuf==3.20.1
+protobuf==3.20.2
 ipykernel==6.15.1
 pydot==1.4.2
 tqdm
