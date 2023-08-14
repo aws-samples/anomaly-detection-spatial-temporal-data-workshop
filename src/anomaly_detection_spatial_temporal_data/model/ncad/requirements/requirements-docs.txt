@@ -9,5 +9,5 @@ sphinx~=2.1
 sphinx-autobuild~=0.7
 sphinx-autorun
 sphinx-gallery
-tornado==5.1.1
+tornado==6.3.3
 mxtheme==0.3.*
